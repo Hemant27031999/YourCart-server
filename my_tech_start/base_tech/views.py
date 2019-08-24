@@ -26,10 +26,8 @@ def signup(request):
             login(request, user)
             return redirect('index')
         else:
-            print(form)
             print("form invalid")
     else:
-        print(form)
         print("Not POST")
         form = SignUpForm()
     return render(request, 'base_tech/signup.html', {'form': form})
