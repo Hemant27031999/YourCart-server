@@ -25,7 +25,7 @@ SECRET_KEY = '(4#a1iczbip=u)anj54$id1w#sh63-mrhuqlwie(btsmp@08gb'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 LOGIN_REDIRECT_URL = 'index'
-ALLOWED_HOSTS = ['http://hemantyadav.pythonanywhere.com']
+ALLOWED_HOSTS = ['hemantyadav.pythonanywhere.com']
 
 
 # Application definition
@@ -44,7 +44,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -69,7 +69,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'my_tech_start.wsgi.application'
-CSRF_USE_SESSIONS = True
+# CSRF_USE_SESSIONS = True
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
