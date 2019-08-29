@@ -25,7 +25,7 @@ SECRET_KEY = '(4#a1iczbip=u)anj54$id1w#sh63-mrhuqlwie(btsmp@08gb'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 LOGIN_REDIRECT_URL = 'index'
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = ['http://hemantyadav.pythonanywhere.com']
 
 
 # Application definition
