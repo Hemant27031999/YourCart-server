@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path
 from base_tech import views
 from django.contrib.auth import views as auth_views
+from django.conf.urls import include
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -24,7 +25,7 @@ urlpatterns = [
     path('signup/', views.signup, name='signup'),
     path('getaccess/', views.getaccess, name='getaccess'),
     path('login/', views.loginuser, name='loginuser'),
-    # path('paytm/generateChecksum.php', )
+    path('paytm/', include('paytm.urls')),
     # path('login/', auth_views.LoginView.as_view(template_name="base_tech/login.html"), name='login'),
     # path('logout/', auth_views.LogoutView, name='logout'),
 ]

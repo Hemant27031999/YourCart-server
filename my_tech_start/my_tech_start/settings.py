@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'base_tech'
+    'base_tech',
+    'paytm',
 ]
 
 MIDDLEWARE = [
@@ -48,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.security.SecurityMiddleware',
 ]
 
 ROOT_URLCONF = 'my_tech_start.urls'
@@ -119,3 +121,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+PAYTM_MERCHANT_KEY = "#k@VukVkSWlfOOXT"
+PAYTM_MERCHANT_ID = "zUPPzR66078013548661"
+HOST_URL = "http://127.0.0.1:8000/"
+PAYTM_CALLBACK_URL = "/paytm/response/"
+
+if DEBUG:
+    PAYTM_MERCHANT_KEY = "#k@VukVkSWlfOOXT"
+    PAYTM_MERCHANT_ID = "zUPPzR66078013548661"
+    PAYTM_WEBSITE = 'WEB_STAGING'
+    HOST_URL = 'http://127.0.0.1:8000/'
