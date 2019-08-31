@@ -25,7 +25,7 @@ SECRET_KEY = '(4#a1iczbip=u)anj54$id1w#sh63-mrhuqlwie(btsmp@08gb'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 LOGIN_REDIRECT_URL = 'index'
-ALLOWED_HOSTS = ['hemantyadav.pythonanywhere.com']
+ALLOWED_HOSTS = ['127.0.0.1']
 
 
 # Application definition
@@ -130,5 +130,5 @@ PAYTM_CALLBACK_URL = "/paytm/response/"
 if DEBUG:
     PAYTM_MERCHANT_KEY = "#k@VukVkSWlfOOXT"
     PAYTM_MERCHANT_ID = "zUPPzR66078013548661"
-    PAYTM_WEBSITE = 'WEB_STAGING'
+    PAYTM_WEBSITE = 'WEBSTAGING'
     HOST_URL = 'http://127.0.0.1:8000/'
