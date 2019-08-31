@@ -103,7 +103,7 @@ if __name__ == "__main__":
         "ORDER_ID": "order_id",
         "CUST_ID": "cust_id",
         "TXN_AMOUNT": "1",
-        "CHANNEL_ID": "WEB",
+        "CHANNEL_ID": "WAP",
         "INDUSTRY_TYPE_ID": "Retail",
-        "WEBSITE": "WEB_STAGING"
+        "WEBSITE": "WEBSTAGING"
     }

@@ -124,11 +124,11 @@ STATIC_URL = '/static/'
 
 PAYTM_MERCHANT_KEY = "#k@VukVkSWlfOOXT"
 PAYTM_MERCHANT_ID = "zUPPzR66078013548661"
-HOST_URL = "http://127.0.0.1:8000/"
+HOST_URL = "http://hemantyadav.pythonanywhere.com/"
 PAYTM_CALLBACK_URL = "/paytm/response/"
 
 if DEBUG:
     PAYTM_MERCHANT_KEY = "#k@VukVkSWlfOOXT"
     PAYTM_MERCHANT_ID = "zUPPzR66078013548661"
     PAYTM_WEBSITE = 'WEBSTAGING'
-    HOST_URL = 'http://127.0.0.1:8000/'
+    HOST_URL = 'http://hemantyadav.pythonanywhere.com/'
