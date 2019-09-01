@@ -51,6 +51,8 @@ def response(request):
         data_dict = {}
         for key in request.POST:
             data_dict[key] = request.POST[key]
+
+        print(data_dict)
         verify = Checksum.verify_checksum(data_dict, MERCHANT_KEY, data_dict['CHECKSUMHASH'])
         if verify:
             PaytmHistory.objects.create(user=request.user, **data_dict)
