@@ -34,7 +34,9 @@ def payment(request):
                     'INDUSTRY_TYPE_ID':'Retail',
                     'WEBSITE': settings.PAYTM_WEBSITE,
                     'CHANNEL_ID':'WAP',
-                    #'CALLBACK_URL':CALLBACK_URL,
+                    'EMAIL' = 'ashishjdh2018@gmail.com', #customer email id
+                    'MOBILE_NO' = '8003118211', #customer 10 digit mobile no.
+                    'CALLBACK_URL' = CALLBACK_URL,
                 }
         param_dict = data_dict
         param_dict['CHECKSUMHASH'] = Checksum.generate_checksum(data_dict, MERCHANT_KEY)
