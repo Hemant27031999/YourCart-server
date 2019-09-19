@@ -26,6 +26,8 @@ SECRET_KEY = '(4#a1iczbip=u)anj54$id1w#sh63-mrhuqlwie(btsmp@08gb'
 DEBUG = True
 LOGIN_REDIRECT_URL = 'index'
 ALLOWED_HOSTS = ['hemantyadav.pythonanywhere.com']
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 # Application definition
@@ -37,7 +39,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
     'base_tech',
     'paytm',
 ]

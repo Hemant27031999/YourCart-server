@@ -56,7 +56,8 @@ def response(request):
         verify = Checksum.verify_checksum(data_dict, MERCHANT_KEY, data_dict['CHECKSUMHASH'])
         if verify:
             # PaytmHistory.objects.create(user=request.user, **data_dict)
-            return render(request,"response.html",{"paytm":data_dict})
+            # return render(request,"response.html",{"paytm":data_dict})
+            return JsonResponse(data_dict)
         else:
             return HttpResponse("checksum verify failed")
     return HttpResponse(status=200)

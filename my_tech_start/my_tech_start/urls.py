@@ -13,11 +13,14 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
 from django.contrib import admin
 from django.urls import path
 from base_tech import views
 from django.contrib.auth import views as auth_views
 from django.conf.urls import include
+from django.contrib.staticfiles.urls import static
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -26,6 +29,17 @@ urlpatterns = [
     path('getaccess/', views.getaccess, name='getaccess'),
     path('login/', views.loginuser, name='loginuser'),
     path('paytm/', include('paytm.urls')),
+    path('image_upload/', views.hotel_image_view, name = 'image_upload'),
+    path('success', views.success, name = 'success'),
+    path('hotel_images/', views.display_hotel_images, name = 'hotel_images'),
+    path('serve/', views.send_file, name = 'serve'),
+    path('category/', views.loadAllCategories, name = 'loadAllCategories'),
+    # path('<int:category_id>/category/', views.results, name='results'),
+    # path('<str:image_id>/', views.useid, name='useid'),
     # path('login/', auth_views.LoginView.as_view(template_name="base_tech/login.html"), name='login'),
     # path('logout/', auth_views.LogoutView, name='logout'),
 ]
+
+if settings.DEBUG:
+        urlpatterns += static(settings.MEDIA_URL,
+                              document_root=settings.MEDIA_ROOT)

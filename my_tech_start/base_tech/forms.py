@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from .models import *
 
 
 class SignUpForm(UserCreationForm):
@@ -15,3 +16,11 @@ class SignUpForm(UserCreationForm):
 
     def __str__(self):
         return ("UserCreationForm")
+
+
+
+class HotelForm(forms.ModelForm):
+
+    class Meta:
+        model = Hotel
+        fields = ['name', 'hotel_Main_Img']

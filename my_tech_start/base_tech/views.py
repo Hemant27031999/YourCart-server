@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from django.contrib.auth import login, authenticate
 from django.shortcuts import get_object_or_404, redirect
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse, FileResponse
 from django.middleware.csrf import get_token
-from base_tech.forms import SignUpForm
+from base_tech.forms import *
 from django.contrib.auth.models import User
 
 # Create your views here.
@@ -62,10 +62,80 @@ def loginuser(request):
         if user is not None:
             login(request, user)
             logging_in_user = User.objects.get(username=username)
-            response = {'username' : logging_in_user.username, 'email' : logging_in_user.email, 'first_name' : logging_in_user.first_name, 'last_name' : logging_in_user.last_name, 'password1' : logging_in_user.password, 'password2' : logging_in_user.password}
+            # items = Category.objects.all()
+            # myCategories = []
+            # for item in items:
+            #     dict = {}
+            #     dict["categoryId"] = item.categoryId
+            #     dict["categoryName"] = item.categoryName
+            #     dict["categoryImagePath"] = item.categoryImagePath
+            #     myCategories.append(dict)
+
+            response = {'username' : logging_in_user.username, 'email' : logging_in_user.email, 'first_name' : logging_in_user.first_name, 'last_name' : logging_in_user.last_name}
             return JsonResponse(response)
         else:
             return JsonResponse({'Error': 'Error Signing in !!!'})
     else:
         print("Not POST")
         return JsonResponse({'Error': 'Not a post call !!!'})
+
+
+def loadAllCategories(request):
+    username = request.POST['username']
+    if User.objects.filter(username=username):
+        items = Category.objects.all()
+        myCategories = []
+        for item in items:
+            dict = {}
+            dict["categoryId"] = item.categoryId
+            dict["categoryName"] = item.categoryName
+            dict["categoryImagePath"] = item.categoryImagePath
+            myCategories.append(dict)
+
+        return JsonResponse({'categories' : myCategories})
+
+    else:
+        return JsonResponse({'categories' : []})
+
+
+def hotel_image_view(request):
+
+    if request.method == 'POST':
+        form = HotelForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            form.save()
+            return redirect('success')
+    else:
+        form = HotelForm()
+    return render(request, 'base_tech/hotel_image_form.html', {'form' : form})
+
+
+def success(request):
+    return HttpResponse('successfuly uploaded')
+
+
+def display_hotel_images(request):
+
+    if request.method == 'GET':
+
+        # getting all the objects of hotel.
+        Hotels = Hotel.objects.all()
+        print(Hotels[0].hotel_Main_Img.url)
+        return render(request, 'base_tech/display_hotel_images.html',
+                     {'hotel_images' : Hotels})
+
+
+def send_file(response):
+
+    img = open('media/images/Screenshot_from_2019-06-27_01-12-24.png', 'rb')
+    response = FileResponse(img)
+    return response
+
+
+def useid(request, image_id):
+
+    path = "%s"
+    img = open(path, 'rb')
+    response = FileResponse(img)
+    return response
