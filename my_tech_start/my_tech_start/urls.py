@@ -34,7 +34,7 @@ urlpatterns = [
     path('hotel_images/', views.display_hotel_images, name = 'hotel_images'),
     path('serve/', views.send_file, name = 'serve'),
     path('category/', views.loadAllCategories, name = 'loadAllCategories'),
-    # path('<int:category_id>/category/', views.results, name='results'),
+    path('category/<int:categoryId>/', views.loadSingleCategory, name='loadSingleCategory'),
     # path('<str:image_id>/', views.useid, name='useid'),
     # path('login/', auth_views.LoginView.as_view(template_name="base_tech/login.html"), name='login'),
     # path('logout/', auth_views.LogoutView, name='logout'),

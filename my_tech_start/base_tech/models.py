@@ -17,6 +17,7 @@ class CategorizedProducts(models.Model):
     product_price = models.IntegerField()
     product_rating = models.FloatField()
     product_descp = models.CharField(max_length=255)
+    product_imagepath = models.CharField(max_length=255, default='media/images/clothing.png')
 
     def __str__(self):
         return self.product_name

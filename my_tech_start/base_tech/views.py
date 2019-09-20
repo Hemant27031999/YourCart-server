@@ -98,6 +98,23 @@ def loadAllCategories(request):
         return JsonResponse({'categories' : []})
 
 
+def loadSingleCategory(request, categoryId):
+    products = CategorizedProducts.objects.filter(under_category=categoryId)
+    myProducts = []
+    for product in products:
+        dict = {}
+        dict["under_category"] = product.under_category
+        dict["product_name"] = product.product_name
+        dict["product_descp"] = product.product_descp
+        dict["product_id"] = product.product_id
+        dict["product_price"] = product.product_price
+        dict["product_rating"] = product.product_rating
+        dict["product_imagepath"] = product.product_imagepath
+        myProducts.append(dict)
+
+    return JsonResponse({'products' : myProducts})
+
+
 def hotel_image_view(request):
 
     if request.method == 'POST':
