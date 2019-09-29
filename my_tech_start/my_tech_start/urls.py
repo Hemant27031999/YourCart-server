@@ -21,11 +21,13 @@ from django.contrib.auth import views as auth_views
 from django.conf.urls import include
 from django.contrib.staticfiles.urls import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from rest_framework.urlpatterns import format_suffix_patterns
+
 
 urlpatterns = [
     path('', views.index, name='index'),
     path('admin/', admin.site.urls),
-    path('signup/', views.signup, name='signup'),
+    path('signup/', views.SignUp.as_view(), name='signup'),
     path('getaccess/', views.getaccess, name='getaccess'),
     path('login/', views.loginuser, name='loginuser'),
     path('paytm/', include('paytm.urls')),
@@ -39,6 +41,8 @@ urlpatterns = [
     # path('login/', auth_views.LoginView.as_view(template_name="base_tech/login.html"), name='login'),
     # path('logout/', auth_views.LogoutView, name='logout'),
 ]
+
+urlpatterns = format_suffix_patterns(urlpatterns)
 
 if settings.DEBUG:
         urlpatterns += static(settings.MEDIA_URL,
