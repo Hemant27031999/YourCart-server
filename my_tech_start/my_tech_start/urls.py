@@ -28,6 +28,7 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('admin/', admin.site.urls),
     path('signup/', views.SignUp.as_view(), name='signup'),
+    path('signup1/', views.SignUp1.as_view(), name='signup'),
     path('getaccess/', views.getaccess, name='getaccess'),
     path('login/', views.loginuser, name='loginuser'),
     path('paytm/', include('paytm.urls')),

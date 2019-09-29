@@ -30,4 +30,4 @@ class AddressForm(forms.ModelForm):
 
     class Meta:
         model = Addresses
-        fields = ['house_no', 'street', 'city', 'landmark', 'pincode', 'email']
+        fields = ['house_no', 'street', 'city', 'landmark', 'pincode', 'phone_no']

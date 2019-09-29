@@ -10,6 +10,9 @@ class RegUser(models.Model):
     email = models.EmailField(max_length=255)
     password = models.CharField(max_length=255)
 
+class UserCache(models.Model):
+    phone_no = models.IntegerField()
+
 class Category(models.Model):
     categoryId = models.IntegerField()
     categoryName = models.CharField(unique=True, max_length=255)
@@ -43,8 +46,7 @@ class Addresses(models.Model):
     city = models.CharField(max_length=30)
     landmark = models.CharField(max_length=100)
     pincode = models.IntegerField()
-    email = models.ForeignKey(RegUser, on_delete=models.CASCADE)
-
+    phone_no = models.ForeignKey(RegUser, to_field='phone_no', on_delete=models.CASCADE)
 
 class Orders(models.Model):
     order_id = models.AutoField(primary_key=True)
@@ -52,4 +54,4 @@ class Orders(models.Model):
     quantity = models.IntegerField()
     order_time = models.DateTimeField('order time')
     address = models.ForeignKey(Addresses, on_delete=models.PROTECT)
-    user = models.ForeignKey(RegUser, on_delete=models.CASCADE)
+    phone_no = models.ForeignKey(RegUser, to_field='phone_no', on_delete=models.CASCADE)
