@@ -1,6 +1,15 @@
 from django.db import models
+from django.utils import timezone
+
 
 # Create your models here.
+class RegUser(models.Model):
+    first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=30)
+    phone_no = models.IntegerField(primary_key=True)
+    email = models.EmailField(max_length=255)
+    password = models.CharField(max_length=255)
+
 class Category(models.Model):
     categoryId = models.IntegerField()
     categoryName = models.CharField(unique=True, max_length=255)
@@ -26,3 +35,21 @@ class CategorizedProducts(models.Model):
 class Hotel(models.Model):
     name = models.CharField(max_length=50)
     hotel_Main_Img = models.ImageField(upload_to='images/')
+
+
+class Addresses(models.Model):
+    house_no = models.CharField(max_length=10)
+    street = models.CharField(max_length=255)
+    city = models.CharField(max_length=30)
+    landmark = models.CharField(max_length=100)
+    pincode = models.IntegerField()
+    email = models.ForeignKey(RegUser, on_delete=models.CASCADE)
+
+
+class Orders(models.Model):
+    order_id = models.AutoField(primary_key=True)
+    item = models.CharField(max_length=255)
+    quantity = models.IntegerField()
+    order_time = models.DateTimeField('order time')
+    address = models.ForeignKey(Addresses, on_delete=models.PROTECT)
+    user = models.ForeignKey(RegUser, on_delete=models.CASCADE)

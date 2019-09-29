@@ -4,7 +4,11 @@ from django.shortcuts import get_object_or_404, redirect
 from django.http import JsonResponse, HttpResponse, FileResponse
 from django.middleware.csrf import get_token
 from base_tech.forms import *
-from django.contrib.auth.models import User
+from rest_framework.views import APIView
+from .models import *
+from .serializers import RegUserSerializer
+from rest_framework.response import Response
+import io
 
 # Create your views here.
 
@@ -23,30 +27,63 @@ def getaccess(request):
 
 
 #Regitering user
-def signup(request):
-    print("Inside signup")
-    response = JsonResponse({'Error': 'True'})
-    if request.method == 'POST':
+#def signup(request):
+#    print("Inside signup")
+#    response = JsonResponse({'Error': 'True'})
+#    if request.method == 'POST':
+#        print("Inside POST")
+#        form = SignUpForm(request.POST)
+#        if form.is_valid():
+#            response = JsonResponse({'Error': 'False'})
+#            print("form Valid")
+#            form.save()
+#            username = form.cleaned_data.get('username')
+#            raw_password = form.cleaned_data.get('password1')
+#            user = authenticate(username=username, password=raw_password)
+#            login(request, user)
+#            logging_in_user = User.objects.get(username=username)
+#            response = {'username' : logging_in_user.username, 'email' : logging_in_user.email, 'first_name' : logging_in_user.first_name, 'last_name' : logging_in_user.last_name, 'password1' : logging_in_user.password, 'password2' : logging_in_user.password}
+#            return JsonResponse(response)
+#        else:
+#            print("form invalid")
+#    else:
+#        print("Not POST")
+#        form = SignUpForm()
+#        return render(request, 'base_tech/signup.html', {'form': form})
+#    return JsonResponse({'credentials' : 'invalid'})
+
+
+class SignUp(APIView):
+    def post(self, request):
+        print("Inside signup")
+        response = JsonResponse({'Error': 'True'})
+       # user = RegUser()
         print("Inside POST")
-        form = SignUpForm(request.POST)
-        if form.is_valid():
-            response = JsonResponse({'Error': 'False'})
-            print("form Valid")
-            form.save()
-            username = form.cleaned_data.get('username')
-            raw_password = form.cleaned_data.get('password1')
-            user = authenticate(username=username, password=raw_password)
-            login(request, user)
-            logging_in_user = User.objects.get(username=username)
-            response = {'username' : logging_in_user.username, 'email' : logging_in_user.email, 'first_name' : logging_in_user.first_name, 'last_name' : logging_in_user.last_name, 'password1' : logging_in_user.password, 'password2' : logging_in_user.password}
+    #    user.first_name = request.POST.get('firstname')
+    #    user.last_name = request.POST.get('lastname')
+    #    user.password = request.POST.get('password')
+    #    user.email = request.POST.get('emailid')
+    #    user.phone_no = request.POST.get('phone')
+    #    user.save()
+    #    response = {'email' : user.email, 'first_name' : user.first_name, 'last_name' : user.last_name, 'password' : user.password, 'phone': user.phone_no}
+        serializer = RegUserSerializer(data=request.data)
+        response = {'success': 'false', 'error': 'invalid data'}
+        if serializer.is_valid():
+            serializer.save()
+            response = {'success': 'true', 'error': ''}
             return JsonResponse(response)
-        else:
-            print("form invalid")
-    else:
-        print("Not POST")
-        form = SignUpForm()
-        return render(request, 'base_tech/signup.html', {'form': form})
-    return JsonResponse({'credentials' : 'invalid'})
+        print(serializer.errors)
+        try:
+            email_err = serializer.errors['email'][0]
+        except:
+            email_err = ""
+        try:
+            phone_err = serializer.errors['phone_no'][0]
+        except:
+            phone_err = ""
+        err_msg = { 'phone_no': phone_err, 'email': email_err }
+        response = {'success': 'false', 'error': err_msg}
+        return JsonResponse(response)
 
 
 
@@ -156,3 +193,45 @@ def useid(request, image_id):
     img = open(path, 'rb')
     response = FileResponse(img)
     return response
+
+def place_order(request):
+
+    if request.method == 'POST':
+        order = Orders()
+        order.item = request.POST['item']
+        order.quantity = request.POST['quantity']
+        
+
+def save_address(request):
+
+    if request.method == "POST":
+        form = AddressForm(request.POST)
+        if form.is_valid():
+            obj = Address()
+            obj.house_no = form.cleaned_data['house_no']
+            obj.street = form.cleaned_data['street']
+            obj.city = form.cleaned_data['city']
+            obj.landmark = form.cleaned_data['landmark']
+            obj.pincode = form.cleaned_data['pincode']
+            obj.username = form.cleaned_data['username']
+            obj.save()
+            response = {'house_no': obj.house_no, 'street': obj.street, 'city': obj.city, 'landmark': obj.landmark, 'pincode': obj.pincode, 'username': obj.username}
+            return JsonResponse(response)
+        else:
+            return JsonResponse({'Error': 'Invalid address !!!'})
+    else:
+        addresses = Addresses.objects.get(username=request.GET['username'])
+        myAddresses = []
+        for address in addresses:
+            dict = {}
+            dict["house_no"] = product.house_no
+            dict["street"] = product.street
+            dict["city"] = product.city
+            dict["landmark"] = product.landmark
+            dict["pincode"] = product.pincode
+            dict["address_id"] = product.address_id
+            dict["username"] = product.username
+            myAddresses.append(dict)
+
+        return JsonResponse({'addresses' : myAddresses})
+

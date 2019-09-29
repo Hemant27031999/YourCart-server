@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'base_tech',
     'paytm',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
