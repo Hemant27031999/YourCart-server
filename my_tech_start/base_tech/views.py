@@ -6,7 +6,7 @@ from django.middleware.csrf import get_token
 from base_tech.forms import *
 from rest_framework.views import APIView
 from .models import *
-from .serializers import RegUserSerializer
+from .serializers import *
 from rest_framework.response import Response
 import io
 
@@ -24,7 +24,22 @@ def index(request):
 def getaccess(request):
     return JsonResponse({'csrfToken': get_token(request)})
 
-
+class SignUp1(APIView):
+    def post(self, request):
+        serializer = UserCacheSerializer(data=request.data)
+        response = {'error': 'abc'}
+        if serializer.is_valid():
+            serializer.save()
+            print(serializer['phone_no'].value)
+            try:
+                obj = RegUser.objects.get(pk=serializer['phone_no'].value)
+                print(obj.first_name)
+                response = {'error': '', 'found': 'true' , 'phone_no': serializer['phone_no'].value, 'first_name': obj.first_name, 'email': obj.email, 'last_name': obj.last_name}
+            except :
+                print("hello")
+                response = {'error': '', 'found': 'false' , 'phone_no': serializer['phone_no'].value, 'first_name': '', 'email': '', 'last_name': ''}
+            return JsonResponse(response)
+        return JsonResponse(serializer.errors)          
 
 #Regitering user
 #def signup(request):
@@ -75,11 +90,11 @@ class SignUp(APIView):
         print(serializer.errors)
         try:
             email_err = serializer.errors['email'][0]
-        except:
+        except AttributeError:
             email_err = ""
         try:
             phone_err = serializer.errors['phone_no'][0]
-        except:
+        except AttributeError:
             phone_err = ""
         err_msg = { 'phone_no': phone_err, 'email': email_err }
         response = {'success': 'false', 'error': err_msg}
@@ -213,14 +228,14 @@ def save_address(request):
             obj.city = form.cleaned_data['city']
             obj.landmark = form.cleaned_data['landmark']
             obj.pincode = form.cleaned_data['pincode']
-            obj.username = form.cleaned_data['username']
+            obj.phone_no = form.cleaned_data['phone']
             obj.save()
-            response = {'house_no': obj.house_no, 'street': obj.street, 'city': obj.city, 'landmark': obj.landmark, 'pincode': obj.pincode, 'username': obj.username}
+            response = {'house_no': obj.house_no, 'street': obj.street, 'city': obj.city, 'landmark': obj.landmark, 'pincode': obj.pincode, 'phone_no': obj.phone}
             return JsonResponse(response)
         else:
             return JsonResponse({'Error': 'Invalid address !!!'})
     else:
-        addresses = Addresses.objects.get(username=request.GET['username'])
+        addresses = Addresses.objects.get(phone_no=request.GET['username'])
         myAddresses = []
         for address in addresses:
             dict = {}
@@ -230,7 +245,7 @@ def save_address(request):
             dict["landmark"] = product.landmark
             dict["pincode"] = product.pincode
             dict["address_id"] = product.address_id
-            dict["username"] = product.username
+            dict["phone_no"] = product.phone_no
             myAddresses.append(dict)
 
         return JsonResponse({'addresses' : myAddresses})
