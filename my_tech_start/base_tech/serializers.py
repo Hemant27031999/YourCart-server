@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import RegUser, UserCache
+from .models import *
 
 class RegUserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -10,3 +10,8 @@ class UserCacheSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserCache
         fields = '__all__'
+
+#class OrdersSerializer(serializers.ModelSerializer):
+#    class Meta:
+#        model = Orders
+#        fields = ['order_id', 'product_id', 'phone_no']
