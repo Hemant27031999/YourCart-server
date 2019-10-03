@@ -55,3 +55,16 @@ class Orders(models.Model):
     order_time = models.DateTimeField('order time')
     address = models.ForeignKey(Addresses, on_delete=models.PROTECT)
     phone_no = models.ForeignKey(RegUser, to_field='phone_no', on_delete=models.CASCADE)
+
+
+class Vendors(models.Model):
+    phone_no = models.CharField(primary_key=True, max_length=255)
+    vendor_lat = models.FloatField()
+    vendor_long = models.FloatField()
+    city = models.CharField(unique=False, max_length=255)
+
+
+class Vendor_Products(models.Model):
+    serial = models.AutoField(primary_key=True)
+    item_name = models.CharField(unique=False, max_length=255)
+    vendor_phone = models.ForeignKey(Vendors,on_delete=models.CASCADE)

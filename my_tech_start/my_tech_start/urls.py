@@ -22,13 +22,14 @@ from django.conf.urls import include
 from django.contrib.staticfiles.urls import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from rest_framework.urlpatterns import format_suffix_patterns
+from django.views.decorators.csrf import csrf_exempt
 
 
 urlpatterns = [
     path('', views.index, name='index'),
     path('admin/', admin.site.urls),
     path('signup/', views.SignUp.as_view(), name='signup'),
-    path('signup1/', views.SignUp1.as_view(), name='signup'),
+    path('signup1/', csrf_exempt(views.SignUp1.as_view()), name='signup'),
     path('getaccess/', views.getaccess, name='getaccess'),
     path('login/', views.loginuser, name='loginuser'),
     path('paytm/', include('paytm.urls')),
@@ -38,6 +39,7 @@ urlpatterns = [
     path('serve/', views.send_file, name = 'serve'),
     path('category/', views.loadAllCategories, name = 'loadAllCategories'),
     path('category/<int:categoryId>/', views.loadSingleCategory, name='loadSingleCategory'),
+    path('getProducts/', views.get_products, name='getProducts'),
     # path('<str:image_id>/', views.useid, name='useid'),
     # path('login/', auth_views.LoginView.as_view(template_name="base_tech/login.html"), name='login'),
     # path('logout/', auth_views.LogoutView, name='logout'),

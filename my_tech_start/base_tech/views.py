@@ -9,6 +9,9 @@ from .models import *
 from .serializers import *
 from rest_framework.response import Response
 import io
+from math import cos, asin, sqrt
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 
@@ -24,7 +27,11 @@ def index(request):
 def getaccess(request):
     return JsonResponse({'csrfToken': get_token(request)})
 
+
+# @method_decorator(csrf_exempt, name='dispatch')
+
 class SignUp1(APIView):
+    @csrf_exempt
     def post(self, request):
         serializer = UserCacheSerializer(data=request.data)
         response = {'error': 'abc'}
@@ -39,7 +46,7 @@ class SignUp1(APIView):
                 print("hello")
                 response = {'error': '', 'found': 'false' , 'phone_no': serializer['phone_no'].value, 'first_name': '', 'email': '', 'last_name': ''}
             return JsonResponse(response)
-        return JsonResponse(serializer.errors)          
+        return JsonResponse(serializer.errors)
 
 #Regitering user
 #def signup(request):
@@ -215,7 +222,7 @@ def place_order(request):
         order = Orders()
         order.item = request.POST['item']
         order.quantity = request.POST['quantity']
-        
+
 
 def save_address(request):
 
@@ -250,3 +257,38 @@ def save_address(request):
 
         return JsonResponse({'addresses' : myAddresses})
 
+
+def distance(lat1, lon1, lat2, lon2):
+     p = 0.017453292519943295
+     a = 0.5 - cos((lat2-lat1)*p)/2+cos(lat1*p)*cos(lat2*p)*(1-cos((lon2-lon1)*p))/2
+     print(12742*asin(sqrt(a)))
+     return 12742*asin(sqrt(a))
+
+
+def get_products(request):
+    if request.method == "POST":
+        mlong = float(request.POST['longitude'])
+        mlat = float(request.POST['latitude'])
+        mcity = request.POST['city']
+
+        vendors = Vendors.objects.filter(city = mcity)
+        selected_vendors = []
+        myProducts = set()
+
+
+        for vendor in vendors:
+            print(type(mlat))
+            if(distance(mlat, mlong, vendor.vendor_lat, vendor.vendor_long) < 7):
+                selected_vendors.append(vendor)
+
+
+        for vendor in selected_vendors:
+            products = Vendor_Products.objects.filter(vendor_phone = vendor)
+            for product in products:
+                myProducts.add(product.item_name)
+
+
+        return JsonResponse(list(myProducts), safe=False)
+
+    else:
+        return JsonResponse({'error' : 'Not a POST request'})
