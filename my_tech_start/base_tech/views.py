@@ -9,9 +9,13 @@ from .models import *
 from .serializers import *
 from rest_framework.response import Response
 import io
+<<<<<<< HEAD
 from math import cos, asin, sqrt
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+=======
+import itertools
+>>>>>>> 69cc78c39b13022ce36ebd5835e6c98cc72efb13
 
 # Create your views here.
 
@@ -41,6 +45,8 @@ class SignUp1(APIView):
             try:
                 obj = RegUser.objects.get(pk=serializer['phone_no'].value)
                 print(obj.first_name)
+                obj = UserCache.objects.get(phone_no=serializer['phone_no'].value)
+                obj.delete()
                 response = {'error': '', 'found': 'true' , 'phone_no': serializer['phone_no'].value, 'first_name': obj.first_name, 'email': obj.email, 'last_name': obj.last_name}
             except :
                 print("hello")
@@ -219,9 +225,46 @@ def useid(request, image_id):
 def place_order(request):
 
     if request.method == 'POST':
+<<<<<<< HEAD
         order = Orders()
         order.item = request.POST['item']
         order.quantity = request.POST['quantity']
+=======
+        print(request.POST)
+        ar1 = request.POST.getlist('items')
+        ar2 = request.POST.getlist('quantities')
+        print(request.POST.getlist('items'))
+        for a,b in zip(ar1,ar2):
+             Orders.objects.create(phone_no = RegUser.objects.get(phone_no=request.POST['phone_no']), address = request.POST['address'], product_id = a, quantity = b)
+      #      obj.order_id = request.POST['order_id']
+      #      obj.phone_no = RegUser.objects.get(phone_no=request.POST['phone_no'])
+      #      obj.address1 = request.POST['address']
+      #      obj.product_id = a
+      #      obj.quantity = b
+      #      obj.save()
+        response = {'key': 'hello'}
+        return JsonResponse(response)
+      #  order = Orders()
+      #  order.item = request.POST['item']
+      #  order.quantity = request.POST['quantity']
+
+#class Place_Orders(APIView):
+#    def post(self, request):
+#        serializer = OrdersSerializer(data=request.data)
+#        response = {'error': 'abc'}
+#        if serializer.is_valid():
+#            print(serializer['product_id'])
+#            for (a, b) in zip(serializer['items'].value, serializer['quantities'].value)
+#                obj = Orders()
+#                obj.order_id = serializer['order_id'].value
+#                obj.phone_no = serializer['phone_no'].value
+#                obj.address = serializer['address'].value
+#                obj.product_id = a
+#                obj.quantity = b
+#                obj.save()
+#            return JsonResponse(serializer.data)
+#        return JsonResponse(serializer.errors)
+>>>>>>> 69cc78c39b13022ce36ebd5835e6c98cc72efb13
 
 
 def save_address(request):
@@ -229,7 +272,7 @@ def save_address(request):
     if request.method == "POST":
         form = AddressForm(request.POST)
         if form.is_valid():
-            obj = Address()
+            obj = Addresses2()
             obj.house_no = form.cleaned_data['house_no']
             obj.street = form.cleaned_data['street']
             obj.city = form.cleaned_data['city']
