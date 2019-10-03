@@ -29,5 +29,5 @@ class HotelForm(forms.ModelForm):
 class AddressForm(forms.ModelForm):
 
     class Meta:
-        model = Addresses
+        model = Addresses2
         fields = ['house_no', 'street', 'city', 'landmark', 'pincode', 'phone_no']
