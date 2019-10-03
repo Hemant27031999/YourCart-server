@@ -150,4 +150,4 @@ if DEBUG:
     PAYTM_WEBSITE = 'WEBSTAGING'
     HOST_URL = 'http://hemantyadav.pythonanywhere.com/'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = {'*'}
