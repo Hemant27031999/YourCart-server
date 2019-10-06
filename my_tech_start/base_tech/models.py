@@ -41,7 +41,7 @@ class Hotel(models.Model):
     hotel_Main_Img = models.ImageField(upload_to='images/')
 
 
-class Addresses2(models.Model):
+class Addresses(models.Model):
     address_id = models.IntegerField(primary_key=True)
     house_no = models.CharField(max_length=10)
     street = models.CharField(max_length=255)
