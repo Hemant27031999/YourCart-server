@@ -226,9 +226,9 @@ def place_order(request):
 
     if request.method == 'POST':
 #<<<<<<< HEAD
-        order = Orders()
-        order.item = request.POST['item']
-        order.quantity = request.POST['quantity']
+      #  order = Orders()
+      #  order.item = request.POST['item']
+      #  order.quantity = request.POST['quantity']
 #=======
         print(request.POST)
         ar1 = request.POST.getlist('items')
