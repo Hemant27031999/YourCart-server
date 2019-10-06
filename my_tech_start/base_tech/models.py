@@ -47,6 +47,13 @@ class Addresses(models.Model):
     pincode = models.IntegerField()
     phone_no = models.ForeignKey(RegUser, to_field='phone_no', on_delete=models.CASCADE)
 
+class indep_Addresses(models.Model):
+    house_no = models.CharField(max_length=10)
+    street = models.CharField(max_length=255)
+    city = models.CharField(max_length=30)
+    landmark = models.CharField(max_length=100)
+    pincode = models.IntegerField()
+
 class Orders(models.Model):
     order_id = models.IntegerField()
     product_id = models.IntegerField()

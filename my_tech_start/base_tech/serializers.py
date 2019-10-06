@@ -18,7 +18,7 @@ class RegAddresses(serializers.ModelSerializer):
 
 class indep_AddressesSerializer(serializers.ModelSerializer):
     class Meta:
-        model=Addresses
+        model=indep_Addresses
         fields = '__all__'
 
 class UserCacheSerializer(serializers.ModelSerializer):
