@@ -7,12 +7,9 @@ import uuid
 class RegUser(models.Model):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
-    phone_no = models.IntegerField(primary_key=True)
+    phone_no = models.CharField(primary_key=True, max_length=15)
     email = models.EmailField(max_length=255)
     password = models.CharField(max_length=255)
-
-class UserCache(models.Model):
-    phone_no = models.IntegerField()
 
 class Category(models.Model):
     categoryId = models.IntegerField(primary_key=True)
@@ -51,7 +48,7 @@ class Addresses(models.Model):
     phone_no = models.ForeignKey(RegUser, to_field='phone_no', on_delete=models.CASCADE)
 
 class Orders(models.Model):
-    order_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    order_id = models.IntegerField()
     product_id = models.IntegerField()
     quantity = models.IntegerField(default=1)
     order_date = models.DateField((u"Order date"), auto_now_add=True)
