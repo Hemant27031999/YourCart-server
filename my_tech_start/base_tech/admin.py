@@ -1,6 +1,6 @@
 from django.contrib import admin
-from base_tech.models import Orders1
+from base_tech.models import Orders
 
 # Register your models here.
-admin.site.register(Orders1)
+admin.site.register(Orders)
 
