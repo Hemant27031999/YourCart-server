@@ -246,8 +246,15 @@ def place_order(request):
         ar1 = request.POST.getlist('items')
         ar2 = request.POST.getlist('quantities')
         print(request.POST.getlist('items'))
+        i=0
         for a,b in zip(ar1,ar2):
-             Orders.objects.create(phone_no = RegUser.objects.get(phone_no=request.POST['phone_no']), address = request.POST['address'], product_id = a, quantity = b)
+            if i==0:
+                obj = Orders.objects.create(phone_no = RegUser.objects.get(phone_no=request.POST['phone_no']), address = request.POST['address'], product_id = a, quantity = b)
+                order_id = obj.order_id
+                i=i+1
+            else:
+                Orders.objects.create(phone_no = RegUser.objects.get(phone_no=request.POST['phone_no']), address = request.POST['address'], product_id = a, quantity = b, order_id= order_id)
+                i=i+1
       #      obj.order_id = request.POST['order_id']
       #      obj.phone_no = RegUser.objects.get(phone_no=request.POST['phone_no'])
       #      obj.address1 = request.POST['address']
