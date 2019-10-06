@@ -110,7 +110,10 @@ class SignUp(APIView):
         response = {'success': 'false', 'error': 'invalid data'}
         if serializer.is_valid():
             serializer.save()
-            response = {'success': 'true', 'error': ''}
+            email_err = ""
+            phone_err = ""
+            err_msg = { 'phone_no': phone_err, 'email': email_err }
+            response = {'success': 'true', 'error': err_msg}
             return JsonResponse(response)
         print(serializer.errors)
         try:
