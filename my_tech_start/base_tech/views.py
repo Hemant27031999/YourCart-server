@@ -311,6 +311,24 @@ def save_address(request):
         return JsonResponse({'addresses' : myAddresses})
 
 
+
+class save_address(APIView):
+    def post(self,request):
+        response = JsonResponse({'Error': 'True'})
+        add_serializer = RegAddresses(data=request.data)
+        if add_serializer.is_valid():
+            add_serializer.save()
+            return JsonResponse(add_serializer.data)
+        return JsonResponse(add_serializer.errors)
+
+class get_address(APIView):
+    def post(self,request):
+        address=(list(Addresses.objects.filter(phone_no=request.POST['phone_no']).values()))
+        #address = get_object_or_404(Addresses,phone_no=request.GET.get('phone_no'))
+        #print(address)
+        #hello={"hello":"12"}
+        return JsonResponse(address,safe=False)
+
 def distance(lat1, lon1, lat2, lon2):
      p = 0.017453292519943295
      a = 0.5 - cos((lat2-lat1)*p)/2+cos(lat1*p)*cos(lat2*p)*(1-cos((lon2-lon1)*p))/2
