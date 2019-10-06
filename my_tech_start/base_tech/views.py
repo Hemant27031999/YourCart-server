@@ -9,6 +9,11 @@ from .models import *
 from .serializers import *
 from rest_framework.response import Response
 import io
+from math import cos, asin, sqrt
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+import itertools
+
 
 # Create your views here.
 
@@ -24,7 +29,11 @@ def index(request):
 def getaccess(request):
     return JsonResponse({'csrfToken': get_token(request)})
 
+
+# @method_decorator(csrf_exempt, name='dispatch')
+
 class SignUp1(APIView):
+    @csrf_exempt
     def post(self, request):
         serializer = UserCacheSerializer(data=request.data)
         response = {'error': 'abc'}
@@ -34,12 +43,14 @@ class SignUp1(APIView):
             try:
                 obj = RegUser.objects.get(pk=serializer['phone_no'].value)
                 print(obj.first_name)
+                obj = UserCache.objects.get(phone_no=serializer['phone_no'].value)
+                obj.delete()
                 response = {'error': '', 'found': 'true' , 'phone_no': serializer['phone_no'].value, 'first_name': obj.first_name, 'email': obj.email, 'last_name': obj.last_name}
             except :
                 print("hello")
                 response = {'error': '', 'found': 'false' , 'phone_no': serializer['phone_no'].value, 'first_name': '', 'email': '', 'last_name': ''}
             return JsonResponse(response)
-        return JsonResponse(serializer.errors)          
+        return JsonResponse(serializer.errors)
 
 #Regitering user
 #def signup(request):
@@ -212,17 +223,54 @@ def useid(request, image_id):
 def place_order(request):
 
     if request.method == 'POST':
-        order = Orders()
-        order.item = request.POST['item']
-        order.quantity = request.POST['quantity']
-        
+#<<<<<<< HEAD
+      #  order = Orders()
+      #  order.item = request.POST['item']
+      #  order.quantity = request.POST['quantity']
+#=======
+        print(request.POST)
+        ar1 = request.POST.getlist('items')
+        ar2 = request.POST.getlist('quantities')
+        print(request.POST.getlist('items'))
+        for a,b in zip(ar1,ar2):
+             Orders.objects.create(phone_no = RegUser.objects.get(phone_no=request.POST['phone_no']), address = request.POST['address'], product_id = a, quantity = b)
+      #      obj.order_id = request.POST['order_id']
+      #      obj.phone_no = RegUser.objects.get(phone_no=request.POST['phone_no'])
+      #      obj.address1 = request.POST['address']
+      #      obj.product_id = a
+      #      obj.quantity = b
+      #      obj.save()
+        response = {'key': 'hello'}
+        return JsonResponse(response)
+      #  order = Orders()
+      #  order.item = request.POST['item']
+      #  order.quantity = request.POST['quantity']
+
+#class Place_Orders(APIView):
+#    def post(self, request):
+#        serializer = OrdersSerializer(data=request.data)
+#        response = {'error': 'abc'}
+#        if serializer.is_valid():
+#            print(serializer['product_id'])
+#            for (a, b) in zip(serializer['items'].value, serializer['quantities'].value)
+#                obj = Orders()
+#                obj.order_id = serializer['order_id'].value
+#                obj.phone_no = serializer['phone_no'].value
+#                obj.address = serializer['address'].value
+#                obj.product_id = a
+#                obj.quantity = b
+#                obj.save()
+#            return JsonResponse(serializer.data)
+#        return JsonResponse(serializer.errors)
+#>>>>>>> 69cc78c39b13022ce36ebd5835e6c98cc72efb13
+
 
 def save_address(request):
 
     if request.method == "POST":
         form = AddressForm(request.POST)
         if form.is_valid():
-            obj = Address()
+            obj = Addresses2()
             obj.house_no = form.cleaned_data['house_no']
             obj.street = form.cleaned_data['street']
             obj.city = form.cleaned_data['city']
@@ -250,3 +298,38 @@ def save_address(request):
 
         return JsonResponse({'addresses' : myAddresses})
 
+
+def distance(lat1, lon1, lat2, lon2):
+     p = 0.017453292519943295
+     a = 0.5 - cos((lat2-lat1)*p)/2+cos(lat1*p)*cos(lat2*p)*(1-cos((lon2-lon1)*p))/2
+     print(12742*asin(sqrt(a)))
+     return 12742*asin(sqrt(a))
+
+
+def get_products(request):
+    if request.method == "POST":
+        mlong = float(request.POST['longitude'])
+        mlat = float(request.POST['latitude'])
+        mcity = request.POST['city']
+
+        vendors = Vendors.objects.filter(city = mcity)
+        selected_vendors = []
+        myProducts = set()
+
+
+        for vendor in vendors:
+            print(type(mlat))
+            if(distance(mlat, mlong, vendor.vendor_lat, vendor.vendor_long) < 7):
+                selected_vendors.append(vendor)
+
+
+        for vendor in selected_vendors:
+            products = Vendor_Products.objects.filter(vendor_phone = vendor)
+            for product in products:
+                myProducts.add(product.item_name)
+
+
+        return JsonResponse(list(myProducts), safe=False)
+
+    else:
+        return JsonResponse({'error' : 'Not a POST request'})

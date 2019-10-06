@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+import dj_database_url
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,7 +26,7 @@ SECRET_KEY = '(4#a1iczbip=u)anj54$id1w#sh63-mrhuqlwie(btsmp@08gb'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 LOGIN_REDIRECT_URL = 'index'
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = ['*']
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
@@ -46,6 +47,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     # 'django.middleware.csrf.CsrfViewMiddleware',
@@ -75,6 +77,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'my_tech_start.wsgi.application'
+#ALLOWED_HOSTS = ['secure-plateau-67455.herokuapp.com']
 # CSRF_USE_SESSIONS = True
 
 # Database
@@ -87,6 +90,8 @@ DATABASES = {
     }
 }
 
+prod_db  =  dj_database_url.config(conn_max_age=500)
+DATABASES['default'].update(prod_db)
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -124,7 +129,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+STATIC_ROOT = os.path.join(PROJECT_ROOT, '..', 'staticfiles')
 STATIC_URL = '/static/'
+
+STATICFILES_DIRS = (
+    os.path.join(PROJECT_ROOT, '..', 'static'),
+)
+
+#STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 PAYTM_MERCHANT_KEY = "#k@VukVkSWlfOOXT"
 PAYTM_MERCHANT_ID = "zUPPzR66078013548661"
@@ -136,3 +149,7 @@ if DEBUG:
     PAYTM_MERCHANT_ID = "zUPPzR66078013548661"
     PAYTM_WEBSITE = 'WEBSTAGING'
     HOST_URL = 'http://hemantyadav.pythonanywhere.com/'
+
+#ALLOWED_HOSTS = {'*'}
+import django_heroku
+django_heroku.settings(locals())
