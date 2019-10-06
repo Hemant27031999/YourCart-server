@@ -30,7 +30,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('signup/', views.SignUp.as_view(), name='signup'),
     # path('signup1/', csrf_exempt(views.SignUp1.as_view()), name='signup'),
-    path('signup1/', views.SignUp1.as_view(), name='signup1'),
+    path('signup1/', views.signup1, name='signup1'),
     path('place_order/', views.place_order, name='place_order'),
     path('getaccess/', views.getaccess, name='getaccess'),
     path('login/', views.loginuser, name='loginuser'),
