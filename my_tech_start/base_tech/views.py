@@ -34,25 +34,37 @@ def getaccess(request):
 
 # @method_decorator(csrf_exempt, name='dispatch')
 
-class SignUp1(APIView):
-    @csrf_exempt
-    def post(self, request):
-        serializer = UserCacheSerializer(data=request.data)
-        response = {'error': 'abc'}
-        if serializer.is_valid():
-            serializer.save()
-            print(serializer['phone_no'].value)
-            try:
-                obj = RegUser.objects.get(pk=serializer['phone_no'].value)
-                print(obj.first_name)
-                obj = UserCache.objects.get(phone_no=serializer['phone_no'].value)
-                obj.delete()
-                response = {'error': '', 'found': 'true' , 'phone_no': serializer['phone_no'].value, 'first_name': obj.first_name, 'email': obj.email, 'last_name': obj.last_name}
-            except :
-                print("hello")
-                response = {'error': '', 'found': 'false' , 'phone_no': serializer['phone_no'].value, 'first_name': '', 'email': '', 'last_name': ''}
-            return JsonResponse(response)
-        return JsonResponse(serializer.errors)
+#class SignUp1(APIView):
+#    @csrf_exempt
+#    def post(self, request):
+#        serializer = UserCacheSerializer(data=request.data)
+#        response = {'error': 'abc'}
+#        if serializer.is_valid():
+#            serializer.save()
+#            print(serializer['phone_no'].value)
+#            try:
+#                obj = RegUser.objects.get(pk=serializer['phone_no'].value)
+#                print(obj.first_name)
+#                obj = UserCache.objects.get(phone_no=serializer['phone_no'].value)
+#                obj.delete()
+#                response = {'error': '', 'found': 'true' , 'phone_no': serializer['phone_no'].value, 'first_name': obj.first_name, 'email': obj.email, 'last_name': obj.last_name}
+#            except :
+#                print("hello")
+#                response = {'error': '', 'found': 'false' , 'phone_no': serializer['phone_no'].value, 'first_name': '', 'email': '', 'last_name': ''}
+#            return JsonResponse(response)
+#        return JsonResponse(serializer.errors)
+#
+def signup1(request):
+    if request.method == 'POST':
+        no = request.POST['phone_no'];
+        try:
+            obj = RegUser.objects.get(pk=no)
+            print(obj.first_name)
+            response = {'error': '', 'found': 'true' , 'phone_no': no, 'first_name': obj.first_name, 'email': obj.email, 'last_name': obj.last_name}
+        except :
+            print("hello")
+            response = {'error': '', 'found': 'false' , 'phone_no': no, 'first_name': '', 'email': '', 'last_name': ''}
+        return JsonResponse(response)
 
 #Regitering user
 #def signup(request):
@@ -103,11 +115,11 @@ class SignUp(APIView):
         print(serializer.errors)
         try:
             email_err = serializer.errors['email'][0]
-        except AttributeError:
+        except:
             email_err = ""
         try:
             phone_err = serializer.errors['phone_no'][0]
-        except AttributeError:
+        except:
             phone_err = ""
         err_msg = { 'phone_no': phone_err, 'email': email_err }
         response = {'success': 'false', 'error': err_msg}
@@ -242,7 +254,7 @@ def place_order(request):
       #      obj.product_id = a
       #      obj.quantity = b
       #      obj.save()
-        response = {'key': 'hello'}
+        response = {'success': 'true'}
         return JsonResponse(response)
       #  order = Orders()
       #  order.item = request.POST['item']

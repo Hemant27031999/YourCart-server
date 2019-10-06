@@ -6,11 +6,6 @@ class RegUserSerializer(serializers.ModelSerializer):
         model = RegUser
         fields = '__all__'
 
-class UserCacheSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserCache
-        fields = '__all__'
-
 #class OrdersSerializer(serializers.ModelSerializer):
 #    class Meta:
 #        model = Orders
