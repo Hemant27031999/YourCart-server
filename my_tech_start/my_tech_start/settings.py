@@ -77,7 +77,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'my_tech_start.wsgi.application'
-ALLOWED_HOSTS = ['secure-plateau-67455.herokuapp.com']
+#ALLOWED_HOSTS = ['secure-plateau-67455.herokuapp.com']
 # CSRF_USE_SESSIONS = True
 
 # Database
@@ -130,14 +130,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
-STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
+STATIC_ROOT = os.path.join(PROJECT_ROOT, '..', 'staticfiles')
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
-    os.path.join(PROJECT_ROOT, 'static'),
+    os.path.join(PROJECT_ROOT, '..', 'static'),
 )
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+#STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 PAYTM_MERCHANT_KEY = "#k@VukVkSWlfOOXT"
 PAYTM_MERCHANT_ID = "zUPPzR66078013548661"
@@ -150,4 +150,6 @@ if DEBUG:
     PAYTM_WEBSITE = 'WEBSTAGING'
     HOST_URL = 'http://hemantyadav.pythonanywhere.com/'
 
-ALLOWED_HOSTS = {'*'}
+#ALLOWED_HOSTS = {'*'}
+import django_heroku
+django_heroku.settings(locals())
