@@ -9,13 +9,13 @@ from .models import *
 from .serializers import *
 from rest_framework.response import Response
 import io
-<<<<<<< HEAD
+#<<<<<<< HEAD
 from math import cos, asin, sqrt
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-=======
+#=======
 import itertools
->>>>>>> 69cc78c39b13022ce36ebd5835e6c98cc72efb13
+#>>>>>>> 69cc78c39b13022ce36ebd5835e6c98cc72efb13
 
 # Create your views here.
 
@@ -225,11 +225,11 @@ def useid(request, image_id):
 def place_order(request):
 
     if request.method == 'POST':
-<<<<<<< HEAD
+#<<<<<<< HEAD
         order = Orders()
         order.item = request.POST['item']
         order.quantity = request.POST['quantity']
-=======
+#=======
         print(request.POST)
         ar1 = request.POST.getlist('items')
         ar2 = request.POST.getlist('quantities')
@@ -264,7 +264,7 @@ def place_order(request):
 #                obj.save()
 #            return JsonResponse(serializer.data)
 #        return JsonResponse(serializer.errors)
->>>>>>> 69cc78c39b13022ce36ebd5835e6c98cc72efb13
+#>>>>>>> 69cc78c39b13022ce36ebd5835e6c98cc72efb13
 
 
 def save_address(request):
