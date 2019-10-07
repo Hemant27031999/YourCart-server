@@ -9,13 +9,11 @@ from .models import *
 from .serializers import *
 from rest_framework.response import Response
 import io
-#<<<<<<< HEAD
 from math import cos, asin, sqrt
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-#=======
 import itertools
-#>>>>>>> 69cc78c39b13022ce36ebd5835e6c98cc72efb13
+
 
 # Create your views here.
 
@@ -324,6 +322,24 @@ def save_address(request):
 
         return JsonResponse({'addresses' : myAddresses})
 
+
+
+class save_address(APIView):
+    def post(self,request):
+        response = JsonResponse({'Error': 'True'})
+        add_serializer = RegAddresses(data=request.data)
+        if add_serializer.is_valid():
+            add_serializer.save()
+            return JsonResponse(add_serializer.data)
+        return JsonResponse(add_serializer.errors)
+
+class get_address(APIView):
+    def post(self,request):
+        address=(list(Addresses.objects.filter(phone_no=request.POST['phone_no']).values()))
+        #address = get_object_or_404(Addresses,phone_no=request.GET.get('phone_no'))
+        #print(address)
+        #hello={"hello":"12"}
+        return JsonResponse(address,safe=False)
 
 def distance(lat1, lon1, lat2, lon2):
      p = 0.017453292519943295
