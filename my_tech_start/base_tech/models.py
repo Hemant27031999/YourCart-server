@@ -58,13 +58,16 @@ class indep_Addresses(models.Model):
     pincode = models.IntegerField()
 
 class Orders(models.Model):
-    order_id = models.IntegerField()
+    order_id = models.CharField(primary_key=False, editable=True, default=uuid.uuid4, max_length=500)
     product_id = models.IntegerField()
     quantity = models.IntegerField(default=1)
     order_date = models.DateField((u"Order date"), auto_now_add=True)
     order_time = models.TimeField((u"Order time"), auto_now_add=True)
     address = models.CharField(max_length=500)
     phone_no = models.ForeignKey(RegUser, to_field='phone_no', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.order_id
 
 class Vendors(models.Model):
     phone_no = models.CharField(primary_key=True, max_length=255)

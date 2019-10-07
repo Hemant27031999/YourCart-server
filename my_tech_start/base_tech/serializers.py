@@ -21,10 +21,6 @@ class indep_AddressesSerializer(serializers.ModelSerializer):
         model=indep_Addresses
         fields = '__all__'
 
-class ProductSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CategorizedProducts
-        fields = '__all__'
 
 # class UserCacheSerializer(serializers.ModelSerializer):
 #     class Meta:
