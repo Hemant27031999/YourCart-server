@@ -263,7 +263,7 @@ def place_order(request):
       #      obj.quantity = b
       #      obj.save()
         response = {'success': 'true'}
-     
+
         return JsonResponse(response)
 
       #  order = Orders()
@@ -348,6 +348,19 @@ def distance(lat1, lon1, lat2, lon2):
      return 12742*asin(sqrt(a))
 
 
+def unique(list1):
+
+    # intilize a null list
+    unique_list = []
+
+    # traverse for all elements
+    for x in list1:
+        # check if exists in unique_list or not
+        if x not in unique_list:
+            unique_list.append(x)
+    # print list
+    return unique_list
+
 def get_products(request):
     if request.method == "POST":
         mlong = float(request.POST['longitude'])
@@ -355,8 +368,9 @@ def get_products(request):
         mcity = request.POST['city']
 
         vendors = Vendors.objects.filter(city = mcity)
+        print(vendors)
         selected_vendors = []
-        myProducts = set()
+        myProducts = []
 
 
         for vendor in vendors:
@@ -367,11 +381,34 @@ def get_products(request):
 
         for vendor in selected_vendors:
             products = Vendor_Products.objects.filter(vendor_phone = vendor)
+            #products = (vendor.products.all())
+            #print(products.product_id)
+
             for product in products:
-                myProducts.add(product.item_name)
+                obj = CategorizedProducts.objects.filter(product_id = product.product_id)
+                d = {}
+                d["under_category"]=obj[0].under_category.categoryName
+                d["product_name"]=obj[0].product_name
+                d["product_id"]=obj[0].product_id
+                d["product_price"]=obj[0].product_price
+                d["product_rating"]=obj[0].product_rating
+                d["product_descp"]=obj[0].product_descp
+                d["product_imagepath"]=obj[0].product_imagepath
+                #y = json.loads(d.replace("\"",''))
+                #list1=[]
+
+                myProducts.append((d))
+                #myProducts.add(list1)
+        myProducts=unique(myProducts)
+        print(myProducts)
+        dict={"Prod":(myProducts)}
+        #print(myProducts)
+        #dict={"Prod":"13"}
+        #print(JsonResponse((myProducts),safe=False))
 
 
-        return JsonResponse(list(myProducts), safe=False)
+        return JsonResponse(dict, safe=False)
+
 
     else:
         return JsonResponse({'error' : 'Not a POST request'})
