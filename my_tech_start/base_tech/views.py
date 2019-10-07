@@ -265,7 +265,9 @@ def place_order(request):
       #      obj.quantity = b
       #      obj.save()
         response = {'success': 'true'}
+     
         return JsonResponse(response)
+
       #  order = Orders()
       #  order.item = request.POST['item']
       #  order.quantity = request.POST['quantity']
