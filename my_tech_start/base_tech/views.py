@@ -108,7 +108,10 @@ class SignUp(APIView):
         response = {'success': 'false', 'error': 'invalid data'}
         if serializer.is_valid():
             serializer.save()
-            response = {'success': 'true', 'error': ''}
+            email_err = ""
+            phone_err = ""
+            err_msg = { 'phone_no': phone_err, 'email': email_err }
+            response = {'success': 'true', 'error': err_msg}
             return JsonResponse(response)
         print(serializer.errors)
         try:
@@ -244,8 +247,15 @@ def place_order(request):
         ar1 = request.POST.getlist('items')
         ar2 = request.POST.getlist('quantities')
         print(request.POST.getlist('items'))
+        i=0
         for a,b in zip(ar1,ar2):
-             Orders.objects.create(phone_no = RegUser.objects.get(phone_no=request.POST['phone_no']), address = request.POST['address'], product_id = a, quantity = b)
+            if i==0:
+                obj = Orders.objects.create(phone_no = RegUser.objects.get(phone_no=request.POST['phone_no']), address = request.POST['address'], product_id = a, quantity = b)
+                order_id = obj.order_id
+                i=i+1
+            else:
+                Orders.objects.create(phone_no = RegUser.objects.get(phone_no=request.POST['phone_no']), address = request.POST['address'], product_id = a, quantity = b, order_id= order_id)
+                i=i+1
       #      obj.order_id = request.POST['order_id']
       #      obj.phone_no = RegUser.objects.get(phone_no=request.POST['phone_no'])
       #      obj.address1 = request.POST['address']
@@ -253,7 +263,9 @@ def place_order(request):
       #      obj.quantity = b
       #      obj.save()
         response = {'success': 'true'}
+     
         return JsonResponse(response)
+
       #  order = Orders()
       #  order.item = request.POST['item']
       #  order.quantity = request.POST['quantity']
