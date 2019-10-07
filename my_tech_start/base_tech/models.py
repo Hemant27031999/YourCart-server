@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 import uuid
-
+import json
 
 # Create your models here.
 class RegUser(models.Model):
@@ -28,6 +28,9 @@ class CategorizedProducts(models.Model):
     product_rating = models.FloatField()
     product_descp = models.CharField(max_length=255)
     product_imagepath = models.CharField(max_length=255, default='media/images/clothing.png')
+    def toJSON(self):
+        return json.dumps(self, default=lambda o: o.__dict__)
+    #vendors = models.ManyToManyField(Vendors)
 
     def __str__(self):
         return self.product_name
@@ -68,9 +71,10 @@ class Vendors(models.Model):
     vendor_lat = models.FloatField()
     vendor_long = models.FloatField()
     city = models.CharField(unique=False, max_length=255)
+    #products = models.ManyToManyField(CategorizedProducts)
 
 
 class Vendor_Products(models.Model):
     serial = models.AutoField(primary_key=True)
-    item_name = models.CharField(unique=False, max_length=255)
+    product_id = models.IntegerField()
     vendor_phone = models.ForeignKey(Vendors,on_delete=models.CASCADE)
