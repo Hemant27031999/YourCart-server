@@ -1,3 +1,4 @@
 *.pyc
+/__pyc__/
 venv/
 my_tech_start/db.sqlite3
