@@ -383,6 +383,7 @@ def get_products(request):
             products = Vendor_Products.objects.filter(vendor_phone = vendor)
             #products = (vendor.products.all())
             #print(products.product_id)
+#<<<<<<< HEAD
 
             for product in products:
                 obj = CategorizedProducts.objects.filter(product_id = product.product_id)
@@ -396,9 +397,8 @@ def get_products(request):
                 d["product_imagepath"]=obj[0].product_imagepath
                 #y = json.loads(d.replace("\"",''))
                 #list1=[]
-
                 myProducts.append((d))
-                #myProducts.add(list1)
+            #myProducts.add(list1)
         myProducts=unique(myProducts)
         print(myProducts)
         dict={"Prod":(myProducts)}
@@ -408,7 +408,6 @@ def get_products(request):
 
 
         return JsonResponse(dict, safe=False)
-
 
     else:
         return JsonResponse({'error' : 'Not a POST request'})
