@@ -75,5 +75,5 @@ class Vendors(models.Model):
 
 class Vendor_Products(models.Model):
     serial = models.AutoField(primary_key=True)
-    product_id = models.IntegerField(primary_key=True)
+    product_id = models.IntegerField()
     vendor_phone = models.ForeignKey(Vendors,on_delete=models.CASCADE)
