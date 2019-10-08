@@ -385,21 +385,20 @@ def get_products(request):
             #print(products.product_id)
 #<<<<<<< HEAD
 
-            for product in products:
-                obj = CategorizedProducts.objects.filter(product_id = product.product_id)
-                d = {}
-                d["under_category"]=obj[0].under_category.categoryName
-                d["product_name"]=obj[0].product_name
-                d["product_id"]=obj[0].product_id
-                d["product_price"]=obj[0].product_price
-                d["product_rating"]=obj[0].product_rating
-                d["product_descp"]=obj[0].product_descp
-                d["product_imagepath"]=obj[0].product_imagepath
-                #y = json.loads(d.replace("\"",''))
-                #list1=[]
-
-                myProducts.append((d))
-                #myProducts.add(list1)
+        for product in products:
+            obj = CategorizedProducts.objects.filter(product_id = product.product_id)
+            d = {}
+            d["under_category"]=obj[0].under_category.categoryName
+            d["product_name"]=obj[0].product_name
+            d["product_id"]=obj[0].product_id
+            d["product_price"]=obj[0].product_price
+            d["product_rating"]=obj[0].product_rating
+            d["product_descp"]=obj[0].product_descp
+            d["product_imagepath"]=obj[0].product_imagepath
+            #y = json.loads(d.replace("\"",''))
+            #list1=[]
+            myProducts.append((d))
+            #myProducts.add(list1)
         myProducts=unique(myProducts)
         print(myProducts)
         dict={"Prod":(myProducts)}
