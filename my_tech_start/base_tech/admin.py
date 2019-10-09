@@ -5,6 +5,7 @@ from .models import *
 # Register your models here.
 admin.site.register(Orders)
 admin.site.register(RegUser)
+admin.site.register(Cells)
 @admin.register(Vendors)
 class VendorsAdmin(ImportExportModelAdmin):
 	pass

@@ -8,13 +8,15 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler 
 from sklearn.preprocessing import normalize 
 from sklearn.decomposition import PCA
-from .models import Vendors, Cells
+from base_tech.models import Vendors, Cells
+import csv
+import sqlite3
 
 def clusterer():
 
 	colnames = ['vendor_lat', 'vendor_long']
 	
-	X = pd.read_csv('./../../../../../dataset/Vendors-2019-10-09.csv', names=colnames)
+	X = pd.read_csv('out.csv', names=colnames)
 	
 	print(X.head())
 	
@@ -50,29 +52,47 @@ def unique(list1):
             unique_list.append(x)
     return unique_list
 
-a = clusterer()
-print(a)
 
-b = unique(a)
-b.sort()
+def exportcsv():
 
-n1 = len(a)
-n2 = len(b)
+	conn = sqlite3.connect('./db.sqlite3')
+	cursor = conn.cursor()
+	cursor.execute("select vendor_lat, vendor_long from base_tech_vendors;")
+	with open("out.csv", "w", newline='') as csv_file:  # Python 3 version    
+	#with open("out.csv", "wb") as csv_file:              # Python 2 version
+	    csv_writer = csv.writer(csv_file)
+	  #  csv_writer.writerow([i[0] for i in cursor.description]) # write headers
+	    csv_writer.writerows(cursor)
 
-vendors = Vendors.objects.all()
-
-for i in range(n1):
-	vendors(i).cell_no = a[i]
-
-Cells.objects.all().delete()
-
-objs = []
-
-for i in range(n2):
-	ven = Vendors.objects.filter(cell_no = b[i])
-	no = count(ven)
-	obj = Cells(cell_no=b[i], cell_lat=ven[0].vendor_lat, cell_long=ven[0].vendor_long, no_vendors=no)
-	objs.append(obj)
-
-Cells.objects.bulk_create(objs, n2)
-
+def run():
+	exportcsv()
+	a = clusterer()
+	print(a)
+	
+	b = unique(a)
+	b.sort()
+	
+	n1 = len(a)
+	n2 = len(b)
+	
+	vendors = Vendors.objects.all()
+	
+	for i in range(n1):
+		Vendors.objects.filter(phone_no=vendors[i].phone_no).update(cell_no=a[i])
+	#	vendors[i].update(cell_no = a[i])
+	#	vendors[i].save()
+	
+	Cells.objects.all().delete()
+	
+	objs = []
+	
+	for i in range(n2):
+		ven = Vendors.objects.filter(cell_no = b[i])
+		print(ven)
+		no = len(ven)
+		obj = Cells(cell_no=b[i], cell_lat=ven[0].vendor_lat, cell_long=ven[0].vendor_long, no_vendor=no)
+		objs.append(obj)
+	
+	Cells.objects.bulk_create(objs, n2)
+	
+	
