@@ -71,7 +71,7 @@ objs = []
 for i in range(n2):
 	ven = Vendors.objects.filter(cell_no = b[i])
 	no = count(ven)
-	obj = Cells(cell_no=b[i], cell_lat=ven[0].latitude, cell_long=ven[0].longitude, no_vendors=no)
+	obj = Cells(cell_no=b[i], cell_lat=ven[0].vendor_lat, cell_long=ven[0].vendor_long, no_vendors=no)
 	objs.append(obj)
 
 Cells.objects.bulk_create(objs, n2)

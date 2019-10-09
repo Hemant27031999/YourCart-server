@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'base_tech',
     'paytm',
     'rest_framework',
+    'import_export'
 ]
 
 MIDDLEWARE = [
