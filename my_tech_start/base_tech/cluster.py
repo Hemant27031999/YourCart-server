@@ -31,25 +31,10 @@ labels = est.labels_
 
 print(labels)
 
-colours = {} 
-colours[0] = 'r'
-colours[1] = 'g'
-colours[2] = 'b'
-colours[-1] = 'k'
-  
-# Building the colour vector for each data point 
-cvec = [colours[label] for label in labels] 
-  
-# For the construction of the legend of the plot 
-r = plt.scatter(X_principal['P1'], X_principal['P2'], color ='r'); 
-g = plt.scatter(X_principal['P1'], X_principal['P2'], color ='g'); 
-b = plt.scatter(X_principal['P1'], X_principal['P2'], color ='b'); 
-k = plt.scatter(X_principal['P1'], X_principal['P2'], color ='k'); 
-  
-# Plotting P1 on the X-Axis and P2 on the Y-Axis  
-# according to the colour vector defined 
+#colors = pd.tools.plotting._get_standard_colors(len(labels), color_type='random')
+
 plt.figure(figsize =(9, 9)) 
-plt.scatter(Y['Lattitude'], Y['Longitude'], c = cvec) 
+plt.scatter(Y['Lattitude'], Y['Longitude']) 
   
 # Building the legend 
 plt.legend((r, g, b, k), ('Label 0', 'Label 1', 'Label 2', 'Label -1')) 
