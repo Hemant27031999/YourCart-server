@@ -1,5 +1,6 @@
 from django.contrib import admin
-from base_tech.models import *
+from import_export.admin import ImportExportModelAdmin
+from .models import *
 
 # Register your models here.
 admin.site.register(Orders)
@@ -10,3 +11,4 @@ admin.site.register(Addresses)
 admin.site.register(indep_Addresses)
 admin.site.register(Vendors)
 admin.site.register(Vendor_Products)
+admin.site.register(Cells)
