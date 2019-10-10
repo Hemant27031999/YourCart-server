@@ -61,7 +61,14 @@ class Orders(models.Model):
     order_date = models.DateField((u"Order date"), auto_now_add=True)
     order_time = models.TimeField((u"Order time"), auto_now_add=True)
     address = models.CharField(max_length=500)
-    phone_no = models.ForeignKey(RegUser, to_field='phone_no', on_delete=models.CASCADE)
+    customer_phone = models.ForeignKey(RegUser, to_field='phone_no', on_delete=models.CASCADE)
+    vendor_phone = models.CharField(max_length=500, blank=True)
+   # delivery_boy_phone = models.ForeignKey(Delivery_Boys, on_delete=models.PROTECT)
+    ORDER_STATUS = (
+        ('D', 'Delivered'),
+        ('A', 'Active')
+    )
+    order_status = models.CharField(max_length=50, choices=ORDER_STATUS, default='A')
 
     def __str__(self):
         return self.order_id
@@ -72,14 +79,52 @@ class Vendors(models.Model):
     vendor_long = models.FloatField()
     city = models.CharField(unique=False, max_length=255)
     cell_no = models.IntegerField()
+    STATUS = [
+        ('A', 'Active'),
+        ('I', 'Inactive'),
+    ]
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS,
+        default='I',
+    )
+    total_no_orders = models.IntegerField(default=0)
+    current_no_orders = models.IntegerField(default=0)
+    busy = models.CharField(max_length=20, blank=True)
+
+class Serving_Vendors(models.Model):
+    phone_no = models.ForeignKey(Vendors, to_field="phone_no", on_delete=models.CASCADE)
+    order_id = models.CharField(max_length=500)
 
 class Vendor_Products(models.Model):
     serial = models.AutoField(primary_key=True)
     product_id = models.IntegerField()
-    vendor_phone = models.ForeignKey(Vendors,on_delete=models.CASCADE)
+    vendor_phone = models.ForeignKey(Vendors, on_delete=models.CASCADE)
 
 class Cells(models.Model):
     cell_no = models.IntegerField(primary_key=True)
     cell_lat = models.FloatField()
     cell_long = models.FloatField()
     no_vendor = models.IntegerField()
+
+class Delivery_Boys(models.Model):
+    name = models.CharField(max_length=255)
+    phone_no = models.CharField(max_length=255, primary_key=True)
+    address = models.CharField(max_length=500)
+    STATUS = [
+        ('A', 'Active'),
+        ('I', 'Inactive'),
+    ]
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS,
+        default='I',
+    )
+    total_no_orders = models.IntegerField()
+    current_no_orders = models.IntegerField()
+    busy = models.CharField(max_length=20, blank=True)
+
+class Deliverying_Boys(models.Model):
+    phone_no = models.ForeignKey(Delivery_Boys, to_field='phone_no', on_delete=models.CASCADE)
+    order_id = models.CharField(max_length=500)
+    vendor_phone = models.ForeignKey(Vendors, on_delete=models.PROTECT)
