@@ -46,6 +46,8 @@ class Addresses(models.Model):
     landmark = models.CharField(max_length=100)
     pincode = models.IntegerField()
     phone_no = models.ForeignKey(RegUser, to_field='phone_no', on_delete=models.CASCADE)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
 
 class indep_Addresses(models.Model):
     house_no = models.CharField(max_length=10)
@@ -71,9 +73,10 @@ class Vendors(models.Model):
     vendor_lat = models.FloatField()
     vendor_long = models.FloatField()
     city = models.CharField(unique=False, max_length=255)
+    cell = models.ForeignKey(Cells, on_delete= models.CASCADE)
 
 
 class Vendor_Products(models.Model):
     serial = models.AutoField(primary_key=True)
-    product_id = models.IntegerField(primary_key=True)
+    product_id = models.IntegerField()
     vendor_phone = models.ForeignKey(Vendors,on_delete=models.CASCADE)
