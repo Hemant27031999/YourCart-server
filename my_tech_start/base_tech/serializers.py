@@ -21,7 +21,6 @@ class indep_AddressesSerializer(serializers.ModelSerializer):
         model=indep_Addresses
         fields = '__all__'
 
-
 # class UserCacheSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = UserCache
