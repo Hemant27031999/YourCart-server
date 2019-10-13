@@ -13,9 +13,15 @@ from math import cos, asin, sqrt
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 import itertools
+from background_task import background
+from django.utils import timezone
+import datetime
+import urllib.request
+import requests
 
 
 # Create your views here.
+
 
 
 #DEFAULT page
@@ -250,11 +256,28 @@ def place_order(request):
         i=0
         for a,b in zip(ar1,ar2):
             if i==0:
-                obj = Orders.objects.create(phone_no = RegUser.objects.get(phone_no=request.POST['phone_no']), address = request.POST['address'], product_id = a, quantity = b)
+                obj = Orders.objects.create(
+                    customer_phone = RegUser.objects.get(phone_no=request.POST['phone_no']),
+                    address = request.POST['address'],
+                    product_id = CategorizedProducts.objects.get(product_id=a),
+                    quantity = b,
+                    vendor_phone = request.POST['vendor_phone'],
+                    cust_lat = request.POST['cust_lat'],
+                    cust_long = request.POST['cust_long']
+                )
                 order_id = obj.order_id
                 i=i+1
             else:
-                Orders.objects.create(phone_no = RegUser.objects.get(phone_no=request.POST['phone_no']), address = request.POST['address'], product_id = a, quantity = b, order_id= order_id)
+                Orders.objects.create(
+                    customer_phone = RegUser.objects.get(phone_no=request.POST['phone_no']),
+                    address = request.POST['address'],
+                    product_id = CategorizedProducts.objects.get(product_id=a),
+                    quantity = b,
+                    order_id= order_id,
+                    vendor_phone = request.POST['vendor_phone'],
+                    cust_lat = request.POST['cust_lat'],
+                    cust_long = request.POST['cust_long']
+                )
                 i=i+1
       #      obj.order_id = request.POST['order_id']
       #      obj.phone_no = RegUser.objects.get(phone_no=request.POST['phone_no'])
@@ -288,6 +311,41 @@ def place_order(request):
 #        return JsonResponse(serializer.errors)
 #>>>>>>> 69cc78c39b13022ce36ebd5835e6c98cc72efb13
 
+def subscribe_order(request):
+    if request.method == 'POST':
+        print(request.POST)
+        ar1 = request.POST.getlist('items')
+        ar2 = request.POST.getlist('quantities')
+        print(request.POST.getlist('items'))
+        i=0
+        for a,b in zip(ar1,ar2):
+            if i==0:
+                obj = Subscribed_Orders.objects.create(
+                    customer_phone = RegUser.objects.get(phone_no=request.POST['phone_no']),
+                    address = request.POST['address'],
+                    product_id = a,
+                    quantity = b,
+                    start_date=request.POST['start_date'],
+                    end_date=request.POST['end_date'],
+                    delivery_time=request.POST['del_time'],
+                )
+                order_id = obj.sorder_id
+                i=i+1
+            else:
+                Subscribed_Orders.objects.create(
+                    customer_phone = RegUser.objects.get(phone_no=request.POST['phone_no']),
+                    address = request.POST['address'],
+                    product_id = a,
+                    quantity = b,
+                    sorder_id= order_id,
+                    start_date=request.POST['start_date'],
+                    end_date=request.POST['end_date'],
+                    delivery_time=request.POST['del_time'],
+                )
+                i=i+1
+        response = {'success': 'true'}
+
+        return JsonResponse(response)
 
 def save_address(request):
 
@@ -411,3 +469,50 @@ def get_products(request):
 
     else:
         return JsonResponse({'error' : 'Not a POST request'})
+
+@background(schedule=30)
+def place_subscribed_order(repeat=30):
+    now = timezone.now()
+    sorders = Subscribed_Orders.objects.filter(
+        start_date__lte = now.date(),
+        end_date__gte = now.date(), 
+        delivery_time__gte = now.time(),
+        delivery_time__lte = now + datetime.timedelta(minutes=5)
+    )
+    sorders_unique = sorders.values("sorder_id").distinct()
+    print(sorders_unique)
+    for sorder in sorders_unique:
+        print(sorder['sorder_id'])
+        orders = Subscribed_Orders.objects.filter(sorder_id = sorder['sorder_id'])
+        items = []
+        quantities = []
+        l=orders.count()
+        print(orders)
+        print(l)
+        if l>0:
+            for order in orders:
+                print(order.product_id)
+                items.append(order.product_id.product_id)
+                quantities.append(order.quantity)
+            #    post_data.append(('items',order.product_id.product_id))
+            #    post_data.append(('quantities',order.quantity))
+            #    if line[0] in years_dict:
+            #        # append the new number to the existing array at this slot
+            #        post_data['items'].append(order.product_id.product_id)
+            #    else:
+            #        # create a new array in this slot
+            #        post_data['items'] = [order.quantity]
+            post_data = {
+                'phone_no' : orders[0].customer_phone.phone_no,
+                'vendor_phone' : orders[0].vendor_phone.phone_no,
+                'address' : orders[0].address,
+                'items' : items,
+                'quantities' : quantities
+            }
+            print(post_data)
+        #    result = urllib.request.urlopen('http://127.0.0.1:8000/place_order/', urllib.parse.urlencode(post_data).encode('utf-8'))
+        #    content = result.read()
+        #    print(content)
+            r = requests.post(url = 'http://127.0.0.1:8000/place_order/', data = post_data)
+
+place_subscribed_order()

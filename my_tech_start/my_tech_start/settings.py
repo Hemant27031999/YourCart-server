@@ -30,6 +30,11 @@ ALLOWED_HOSTS = ['*']
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+BACKGROUND_TASK_RUN_ASYNC = True
+USE_TZ = True
+TIME_ZONE =  'Asia/Kolkata'
+USE_I18N = True
+USE_L10N = True
 
 # Application definition
 
@@ -41,9 +46,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'base_tech',
+    'background_task',
     'paytm',
     'rest_framework',
     'django_extensions',
+    'vendor_side',
 ]
 
 MIDDLEWARE = [
