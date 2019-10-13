@@ -262,9 +262,8 @@ def useid(request, image_id):
     response = FileResponse(img)
     return response
 
-def get_products_cell(id)
-{
-    vendor_list = Cells.objects.filter(Cell_id = id)
+def get_products_cell(cell):
+    vendor_list = Vendors.objects.filter(cell = cell)
     myProducts = set()
     for vendor in vendor_list:
         products = Vendor_Products.objects.filter(vendor_phone = vendor)
@@ -274,7 +273,7 @@ def get_products_cell(id)
             myProducts.add(obj[0].product_name)
             #myProducts.add(list1)
     return list(myProducts)
-}
+
 
 def is_Sublist(l, s):
 	sub_set = False
@@ -299,9 +298,16 @@ def is_Sublist(l, s):
 
 
 def vendor_assignment(vendors,ar1,ar2):
-    if len(vendors) == 0:
-        remaining = list(zip(ar1,ar2))
-        return remaining
+    print("a",vendors)
+    if (len(vendors) == 0):
+        print("len_vendors")
+        print(ar1)
+        print(ar2)
+        return ar1,ar2
+        #print(remaining)
+        #return remaining
+    if len(ar1)==0:
+        return ar1,ar2
     n = len(ar1)
     product_count = []
     for vendor in vendors:
@@ -312,17 +318,30 @@ def vendor_assignment(vendors,ar1,ar2):
             myProducts.append(obj[0].product_name)
         m = len([value for value in ar1 if value in myProducts])
         product_count.append(m)
-    zipped_pairs = zip(product_count,vendors)
-    sorted_vendors = [x for _, x in sorted(zipped_pairs, reverse = True)]
-    product_count = sorted(product_count, reverse = True)
+    print(product_count)
+    # zipped_pairs = zip(product_count,vendors)
+    # sorted_vendors = [x for _, x in sorted(zipped_pairs, reverse = True)]
+    # product_count = sorted(product_count, reverse = True)
+    cmax=0
+    vmax=vendors[0]
+    for count,ven in zip(product_count,vendors):
+         if count>=cmax:
+             cmax=count
+             vmax=ven
+    print("vendors_max",vmax)
+    print("count_max",cmax)
     #check whether vendor accepts the order
     #vendor returns list which order he wants to accept
-    accepted_orders=[]
-    remaining_orders = [i for i in ar1 + accepted_orders if i not in accepted_orders]
+    products_selected_vendor = list(Vendor_Products.objects.filter(vendor_phone = vmax))
+    myProducts=[]
+    for product in products_selected_vendor:
+        obj = CategorizedProducts.objects.filter(product_id = product.product_id)
+        myProducts.append(obj[0].product_name)
+    accepted_orders=[i for i in ar1 if i in myProducts ]
+    print(accepted_orders)
+    #remaining_orders = [i for i in ar1 + accepted_orders if i not in accepted_orders]
 
-    if len(remaining_orders)==0:
-        empty =[]
-        return empty
+
 
     # products_selected_vendor = (Vendor_Products.objecs.filter(vendor_phone = sorted_vendors[assigned_index]))
     # myProducts=[]
@@ -330,58 +349,91 @@ def vendor_assignment(vendors,ar1,ar2):
     #     obj = CategorizedProducts.objects.filter(product_id = product.product_id)
     #     myProducts.append(obj[0].product_name)
 
-    vendors.remove(sorted_vendors[0])
+    vendors.remove(vmax)
+    toremove_ar1=[]
+    toremove_ar2=[]
     #new_ar1 = [i for i in ar1 + myproducts if i not in myproducts]
-    new_ar1_vendor=ar1
-    new_ar2_vendor=ar2
-    for i in range(0,len(ar1)):
-        if ar1[i] in accepted_orders:
-            new_ar1_vendor.remove(new_ar1_vendor[i])
-            new_ar2_vendor.remove(new_ar2_vendor[i])
+    for a,b in zip(ar1,ar2):
+        if a in accepted_orders:
+            toremove_ar1.append(a)
+            toremove_ar2.append(b)
+    for a,b in zip(toremove_ar1,toremove_ar2):
+        ar1.remove(a)
+        ar2.remove(b)
 
-    vendor_assignment(vendors, new_ar1_vendor, new_ar2_vendor)
+    print("end of v_assign",ar1)
+    print(ar2)
+    new1,new2=vendor_assignment(vendors, ar1, ar2)
+    return new1,new2
 
 
 
 
 def cell_sort(cells,product_count,ar1,ar2, user_address):
+    print("cell_sort_top",cells)
     if len(cells) == 0:
-        remained = list(zip(ar1,ar2))
-        return remained
+        print("len_cells=0")
+        return ar1,ar2
+    if len(ar1)==0:
+        print("len_ar1=0")
+        return ar1,ar2
     n = len(ar1)
+
     for cell in cells:
-        products = get_products_cell(cell.Cell_id)
+        products = get_products_cell(cell)
         m = len([value for value in ar1 if value in products])
         #m = number of required products cell has
         product_count.append(m)
-    zipped_pairs = zip(product_count,cells)
-    sorted_cells = [x for _, x in sorted(zipped_pairs, reverse = True)]
-    product_count = sorted(product_count, reverse = True)
-    flag = 0
+    # zipped_pairs = zip(product_count,cells)
+    # sorted_cells = [x for _, x in sorted(zipped_pairs, reverse = True)]
+    # product_count = sorted(product_count, reverse = True)
+    count_max=0
+    cell_max_list=[]
+    for count,cell in zip(product_count,cells):
+         if count>count_max:
+             count_max = count
+             cell_max_list=[]
+             cell_max_list.append(cell)
+         elif count==count_max:
+             cell_max_list.append(cell)
+    print("vendors_max",cell_max_list)
+    print("count_max",count_max)
     min_distance = 1000
-    for i in range(0,product_count.count(product_count[0])):
-        dist = distance(sorted_cells[i].Cell_lat,sorted_cells[i].Cell_long,user_address[0].latitude, user_address[0].longitude)
+    for cell in cell_max_list:
+        dist = distance(cell.Cell_lat,cell.Cell_long,user_address[0].latitude, user_address[0].longitude)
         if min_distance > dist:
             min_distance = dist
-            closest_cell = sorted_cells[i].Cell_id
+            closest_cell = cell
+    p1=(get_products_cell(closest_cell))
+    print([value for value in ar1 if value in p1])
     # vendors
+    print("closest_cell",closest_cell)
     vendors = list(Vendors.objects.filter(cell = closest_cell))
-    remaining = vendor_assignment(vendors,ar1,ar2)
 
-    if len(remaining)==0:
-        empty = []
-        return  empty
+    new_ar1,new_ar2= vendor_assignment(vendors,ar1,ar2)
+    #print("remaining= ",remaining)
+    #new_ar1,new_ar2 = zip(*remaining)
 
-    new_ar1,ar2 = zip(*remaining)
+    print(new_ar1)
+    print(new_ar2)
+
+    # print("hello")
+    # print("remain",remaining)
+    # if (remaining==[]):
+    #     empty = []
+    #     # print('shiiiiiiiiiiiiiiii')
+    #     return  empty
+
     product_count = []
     #products = get_products_cell(closest_cell)
     #new_ar1 = [i for i in ar1 + products if i not in products]
-    # for i in range(0,len(ar1)):
+    # for i in rangprint("hello")e(0,len(ar1)):
     #     if ar1[i] in myProducts:
     #         new_ar1.remove(myProducts[i])
     #         ar2.remove(new_ar2_vendor[i])
     cells.remove(closest_cell)
-    cell_sort(cells, product_count , new_ar1,ar2, user_address)
+    new1,new2=cell_sort(cells, product_count , new_ar1,new_ar2, user_address)
+    return new1,new2
 
 
 
@@ -394,14 +446,20 @@ def place_order(request):
         ar1 = request.POST.getlist('items')
         ar2 = request.POST.getlist('quantities')
         user = RegUser.objects.filter(phone_no = request.POST['phone_no'])
-        user_address = Addresses.objects.filter(phone_no = user)
+        user_address = Addresses.objects.filter(phone_no = user[0])
         print(request.POST.getlist('items'))
 
 
         i=0
-        cells = list(Cells.objects.filter(city = user_address[0].city))
+        #cells = list(Cells.objects.filter(city = user_address[0].city))
+        cells_all = list((Cells.objects.all()))
+        cells = []
+        for cell in cells_all:
+            if(distance(user_address[0].latitude,user_address[0].longitude , cell.Cell_lat, cell.Cell_long) < 7):
+                cells.append(cell)
+        print(cells)
         product_count = []
-        remaining_items = cell_sort(cells,product_count,ar1,ar2, user_address)
+        ar1_rem,ar2_rem = cell_sort(cells,product_count,ar1,ar2, user_address)
 
 
             # products = get_products_cell(cell.Cell_id)
@@ -426,7 +484,8 @@ def place_order(request):
         #         if is_Sublist(products,ar1):
         #             closest_vendor = vendor
         #             break
-        if remaining_items==0:
+        if ar1_rem==[]:
+            # print('fir se shiiiiiiiiiiiii')
             for a,b in zip(ar1,ar2):
                 if i==0:
                     obj = Orders.objects.create(phone_no = RegUser.objects.get(phone_no=request.POST['phone_no']), address = request.POST['address'], product_id = a, quantity = b)
@@ -441,11 +500,11 @@ def place_order(request):
           #      obj.product_id = a
           #      obj.quantity = b
           #      obj.save()
-            response = {{'success': 'true'}}
+            response = {'success': 'true'}
 
             return JsonResponse(response)
         else:
-            response = {{'success': 'true'},{"left":remaining}}
+            response = {'success': 'False',"left_prod":ar1_rem,"left_quan":ar2_rem}
             return JsonResponse(response,safe=False)
 
       #  order = Orders()
@@ -550,7 +609,7 @@ def get_products(request):
         mcity = request.POST['city']
 
         vendors = Vendors.objects.filter(city = mcity)
-        print(vendors)
+        #print(vendors)
         selected_vendors = []
         myProducts = []
 
@@ -584,7 +643,7 @@ def get_products(request):
         myProducts=unique(myProducts)
         print(myProducts)
         dict={"Prod":(myProducts)}
-        #print(myProducts)
+        #print(myProducts)  
         #dict={"Prod":"13"}
         #print(JsonResponse((myProducts),safe=False))
 

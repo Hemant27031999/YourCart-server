@@ -1,4 +1,4 @@
-from django.db import models
+..from django.db import models
 from django.utils import timezone
 import uuid
 import json
@@ -78,6 +78,14 @@ class Orders(models.Model):
     def __str__(self):
         return self.order_id
 
+
+class Cells(models.Model):
+    Cell_id = models.IntegerField(primary_key=True)
+    Cell_lat = models.FloatField()
+    Cell_long = models.FloatField()
+    no_vendor = models.IntegerField()
+
+
 class Vendors(models.Model):
     phone_no = models.CharField(primary_key=True, max_length=255)
     vendor_lat = models.FloatField()
@@ -106,11 +114,7 @@ class Vendor_Products(models.Model):
     product_id = models.IntegerField()
     vendor_phone = models.ForeignKey(Vendors, on_delete=models.CASCADE)
 
-class Cells(models.Model):
-    Cell_id = models.IntegerField(primary_key=True)
-    Cell_lat = models.FloatField()
-    Cell_long = models.FloatField()
-    no_vendor = models.IntegerField()
+
 
 class Delivery_Boys(models.Model):
     name = models.CharField(max_length=255)
