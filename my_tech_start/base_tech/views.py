@@ -297,13 +297,13 @@ def is_Sublist(l, s):
 	return sub_set
 
 
-def vendor_assignment(vendors,ar1,ar2):
+def vendor_assignment(vendors,ar1,ar2,vendor_assigned_list,accepted_orders_list):
     print("a",vendors)
     if (len(vendors) == 0):
         print("len_vendors")
         print(ar1)
         print(ar2)
-        return ar1,ar2
+        return ar1,ar2,vendor_assigned_list,accepted_orders_list
         #print(remaining)
         #return remaining
     if len(ar1)==0:
@@ -339,6 +339,8 @@ def vendor_assignment(vendors,ar1,ar2):
         myProducts.append(obj[0].product_name)
     accepted_orders=[i for i in ar1 if i in myProducts ]
     print(accepted_orders)
+    vendor_assigned_list.append(vmax)
+    accepted_orders_list.append(accepted_orders)
     #remaining_orders = [i for i in ar1 + accepted_orders if i not in accepted_orders]
 
 
@@ -363,17 +365,17 @@ def vendor_assignment(vendors,ar1,ar2):
 
     print("end of v_assign",ar1)
     print(ar2)
-    new1,new2=vendor_assignment(vendors, ar1, ar2)
-    return new1,new2
+    new1,new2,new_v_a_l,new_a_o_l=vendor_assignment(vendors, ar1, ar2,vendor_assigned_list, accepted_orders_list)
+    return new1,new2,new_v_a_l,new_a_o_l
 
 
 
 
-def cell_sort(cells,product_count,ar1,ar2, user_address):
+def cell_sort(cells,product_count,ar1,ar2, user_address,vendor_assigned_list,accepted_orders_list):
     print("cell_sort_top",cells)
     if len(cells) == 0:
         print("len_cells=0")
-        return ar1,ar2
+        return ar1,ar2,vendor_assigned_list,accepted_orders_list
     if len(ar1)==0:
         print("len_ar1=0")
         return ar1,ar2
@@ -410,7 +412,11 @@ def cell_sort(cells,product_count,ar1,ar2, user_address):
     print("closest_cell",closest_cell)
     vendors = list(Vendors.objects.filter(cell = closest_cell))
 
-    new_ar1,new_ar2= vendor_assignment(vendors,ar1,ar2)
+    new_ar1,new_ar2,vendor_assigned_list,accepted_orders_list= vendor_assignment(vendors,ar1,ar2,vendor_assigned_list,accepted_orders_list)
+    # for a,b in zip(va_list,a_list):
+    #     vendor_assigned_list,append(a)
+    #     accepted_orders_list.append(b)
+
     #print("remaining= ",remaining)
     #new_ar1,new_ar2 = zip(*remaining)
 
@@ -432,8 +438,8 @@ def cell_sort(cells,product_count,ar1,ar2, user_address):
     #         new_ar1.remove(myProducts[i])
     #         ar2.remove(new_ar2_vendor[i])
     cells.remove(closest_cell)
-    new1,new2=cell_sort(cells, product_count , new_ar1,new_ar2, user_address)
-    return new1,new2
+    new1,new2,new_valist,new_alist=cell_sort(cells, product_count , new_ar1,new_ar2, user_address,vendor_assigned_list,accepted_orders_list)
+    return new1,new2,new_valist,new_alist
 
 
 
@@ -454,13 +460,18 @@ def place_order(request):
         #cells = list(Cells.objects.filter(city = user_address[0].city))
         cells_all = list((Cells.objects.all()))
         cells = []
+        print("cells_all",cells_all[1].Cell_lat," ",cells_all[1].Cell_long)
         for cell in cells_all:
+            print(user_address[0].latitude," ",user_address[0].longitude," " , cell.Cell_lat," ", cell.Cell_long)
             if(distance(user_address[0].latitude,user_address[0].longitude , cell.Cell_lat, cell.Cell_long) < 7):
                 cells.append(cell)
         print(cells)
         product_count = []
-        ar1_rem,ar2_rem = cell_sort(cells,product_count,ar1,ar2, user_address)
-
+        vendor_assigned_list=[]
+        accepted_orders_list=[]
+        ar1_rem,ar2_rem,vendor_assigned_list,accepted_orders_list = cell_sort(cells,product_count,ar1,ar2, user_address,vendor_assigned_list,accepted_orders_list)
+        print(vendor_assigned_list)
+        print(accepted_orders_list)
 
             # products = get_products_cell(cell.Cell_id)
             # if is_Sublist(products,ar1):
@@ -643,7 +654,7 @@ def get_products(request):
         myProducts=unique(myProducts)
         print(myProducts)
         dict={"Prod":(myProducts)}
-        #print(myProducts)  
+        #print(myProducts)
         #dict={"Prod":"13"}
         #print(JsonResponse((myProducts),safe=False))
 
