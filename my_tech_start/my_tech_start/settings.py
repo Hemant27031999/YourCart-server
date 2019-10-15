@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'base_tech',
     'background_task',
     'paytm',
+    'channels',
     'rest_framework',
     'django_extensions',
     'vendor_side',
@@ -68,6 +69,15 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'my_tech_start.urls'
 
 
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -85,6 +95,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'my_tech_start.wsgi.application'
+ASGI_APPLICATION = 'my_tech_start.routing.application'
 #ALLOWED_HOSTS = ['secure-plateau-67455.herokuapp.com']
 # CSRF_USE_SESSIONS = True
 

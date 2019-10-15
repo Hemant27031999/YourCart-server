@@ -18,27 +18,34 @@ from django.utils import timezone
 import datetime
 import urllib.request
 import requests
+from django.utils.safestring import mark_safe
+import json
 
 
 # Create your views here.
 
+def user_list(request):
+    return render(request, 'base_tech/abc.html', {})
 
+def room(request, room_name):
+    return render(request, 'base_tech/room.html', {
+        'room_name_json': mark_safe(json.dumps(room_name))
+    })
 
-#DEFAULT page
+# DEFAULT page
 def index(request):
     print(request.scheme)
     return render(request, 'base_tech/index.html')
 
 
-
-#Sending CSRF Token
+# Sending CSRF Token
 def getaccess(request):
     return JsonResponse({'csrfToken': get_token(request)})
 
 
 # @method_decorator(csrf_exempt, name='dispatch')
 
-#class SignUp1(APIView):
+# class SignUp1(APIView):
 #    @csrf_exempt
 #    def post(self, request):
 #        serializer = UserCacheSerializer(data=request.data)
@@ -64,14 +71,16 @@ def signup1(request):
         try:
             obj = RegUser.objects.get(pk=no)
             print(obj.first_name)
-            response = {'error': '', 'found': 'true' , 'phone_no': no, 'first_name': obj.first_name, 'email': obj.email, 'last_name': obj.last_name}
-        except :
+            response = {'error': '', 'found': 'true', 'phone_no': no, 'first_name': obj.first_name, 'email': obj.email,
+                        'last_name': obj.last_name}
+        except:
             print("hello")
-            response = {'error': '', 'found': 'false' , 'phone_no': no, 'first_name': '', 'email': '', 'last_name': ''}
+            response = {'error': '', 'found': 'false', 'phone_no': no, 'first_name': '', 'email': '', 'last_name': ''}
         return JsonResponse(response)
 
-#Regitering user
-#def signup(request):
+
+# Regitering user
+# def signup(request):
 #    print("Inside signup")
 #    response = JsonResponse({'Error': 'True'})
 #    if request.method == 'POST':
@@ -101,22 +110,22 @@ class SignUp(APIView):
     def post(self, request):
         print("Inside signup")
         response = JsonResponse({'Error': 'True'})
-       # user = RegUser()
+        # user = RegUser()
         print("Inside POST")
-    #    user.first_name = request.POST.get('firstname')
-    #    user.last_name = request.POST.get('lastname')
-    #    user.password = request.POST.get('password')
-    #    user.email = request.POST.get('emailid')
-    #    user.phone_no = request.POST.get('phone')
-    #    user.save()
-    #    response = {'email' : user.email, 'first_name' : user.first_name, 'last_name' : user.last_name, 'password' : user.password, 'phone': user.phone_no}
+        #    user.first_name = request.POST.get('firstname')
+        #    user.last_name = request.POST.get('lastname')
+        #    user.password = request.POST.get('password')
+        #    user.email = request.POST.get('emailid')
+        #    user.phone_no = request.POST.get('phone')
+        #    user.save()
+        #    response = {'email' : user.email, 'first_name' : user.first_name, 'last_name' : user.last_name, 'password' : user.password, 'phone': user.phone_no}
         serializer = RegUserSerializer(data=request.data)
         response = {'success': 'false', 'error': 'invalid data'}
         if serializer.is_valid():
             serializer.save()
             email_err = ""
             phone_err = ""
-            err_msg = { 'phone_no': phone_err, 'email': email_err }
+            err_msg = {'phone_no': phone_err, 'email': email_err}
             response = {'success': 'true', 'error': err_msg}
             return JsonResponse(response)
         print(serializer.errors)
@@ -128,13 +137,12 @@ class SignUp(APIView):
             phone_err = serializer.errors['phone_no'][0]
         except:
             phone_err = ""
-        err_msg = { 'phone_no': phone_err, 'email': email_err }
+        err_msg = {'phone_no': phone_err, 'email': email_err}
         response = {'success': 'false', 'error': err_msg}
         return JsonResponse(response)
 
 
-
-#Signing in User
+# Signing in User
 def loginuser(request):
     print("Inside login")
 
@@ -155,7 +163,8 @@ def loginuser(request):
             #     dict["categoryImagePath"] = item.categoryImagePath
             #     myCategories.append(dict)
 
-            response = {'username' : logging_in_user.username, 'email' : logging_in_user.email, 'first_name' : logging_in_user.first_name, 'last_name' : logging_in_user.last_name}
+            response = {'username': logging_in_user.username, 'email': logging_in_user.email,
+                        'first_name': logging_in_user.first_name, 'last_name': logging_in_user.last_name}
             return JsonResponse(response)
         else:
             return JsonResponse({'Error': 'Error Signing in !!!'})
@@ -176,10 +185,10 @@ def loadAllCategories(request):
             dict["categoryImagePath"] = item.categoryImagePath
             myCategories.append(dict)
 
-        return JsonResponse({'categories' : myCategories})
+        return JsonResponse({'categories': myCategories})
 
     else:
-        return JsonResponse({'categories' : []})
+        return JsonResponse({'categories': []})
 
 
 def loadSingleCategory(request, categoryId):
@@ -196,11 +205,10 @@ def loadSingleCategory(request, categoryId):
         dict["product_imagepath"] = product.product_imagepath
         myProducts.append(dict)
 
-    return JsonResponse({'products' : myProducts})
+    return JsonResponse({'products': myProducts})
 
 
 def hotel_image_view(request):
-
     if request.method == 'POST':
         form = HotelForm(request.POST, request.FILES)
 
@@ -209,7 +217,7 @@ def hotel_image_view(request):
             return redirect('success')
     else:
         form = HotelForm()
-    return render(request, 'base_tech/hotel_image_form.html', {'form' : form})
+    return render(request, 'base_tech/hotel_image_form.html', {'form': form})
 
 
 def success(request):
@@ -217,83 +225,80 @@ def success(request):
 
 
 def display_hotel_images(request):
-
     if request.method == 'GET':
-
         # getting all the objects of hotel.
         Hotels = Hotel.objects.all()
         print(Hotels[0].hotel_Main_Img.url)
         return render(request, 'base_tech/display_hotel_images.html',
-                     {'hotel_images' : Hotels})
+                      {'hotel_images': Hotels})
 
 
 def send_file(response):
-
     img = open('media/images/Screenshot_from_2019-06-27_01-12-24.png', 'rb')
     response = FileResponse(img)
     return response
 
 
 def useid(request, image_id):
-
     path = "%s"
     img = open(path, 'rb')
     response = FileResponse(img)
     return response
 
-def place_order(request):
 
+def place_order(request):
     if request.method == 'POST':
-#<<<<<<< HEAD
-      #  order = Orders()
-      #  order.item = request.POST['item']
-      #  order.quantity = request.POST['quantity']
-#=======
+        # <<<<<<< HEAD
+        #  order = Orders()
+        #  order.item = request.POST['item']
+        #  order.quantity = request.POST['quantity']
+        # =======
         print(request.POST)
         ar1 = request.POST.getlist('items')
         ar2 = request.POST.getlist('quantities')
         print(request.POST.getlist('items'))
-        i=0
-        for a,b in zip(ar1,ar2):
-            if i==0:
+        i = 0
+        for a, b in zip(ar1, ar2):
+            if i == 0:
                 obj = Orders.objects.create(
-                    customer_phone = RegUser.objects.get(phone_no=request.POST['phone_no']),
-                    address = request.POST['address'],
-                    product_id = CategorizedProducts.objects.get(product_id=a),
-                    quantity = b,
-                    vendor_phone = request.POST['vendor_phone'],
-                    cust_lat = request.POST['cust_lat'],
-                    cust_long = request.POST['cust_long']
+                    customer_phone=RegUser.objects.get(phone_no=request.POST['phone_no']),
+                    address=request.POST['address'],
+                    product_id=CategorizedProducts.objects.get(product_id=a),
+                    quantity=b,
+                    vendor_phone=request.POST['vendor_phone'],
+                    cust_lat=request.POST['cust_lat'],
+                    cust_long=request.POST['cust_long']
                 )
                 order_id = obj.order_id
-                i=i+1
+                i = i + 1
             else:
                 Orders.objects.create(
-                    customer_phone = RegUser.objects.get(phone_no=request.POST['phone_no']),
-                    address = request.POST['address'],
-                    product_id = CategorizedProducts.objects.get(product_id=a),
-                    quantity = b,
-                    order_id= order_id,
-                    vendor_phone = request.POST['vendor_phone'],
-                    cust_lat = request.POST['cust_lat'],
-                    cust_long = request.POST['cust_long']
+                    customer_phone=RegUser.objects.get(phone_no=request.POST['phone_no']),
+                    address=request.POST['address'],
+                    product_id=CategorizedProducts.objects.get(product_id=a),
+                    quantity=b,
+                    order_id=order_id,
+                    vendor_phone=request.POST['vendor_phone'],
+                    cust_lat=request.POST['cust_lat'],
+                    cust_long=request.POST['cust_long']
                 )
-                i=i+1
-      #      obj.order_id = request.POST['order_id']
-      #      obj.phone_no = RegUser.objects.get(phone_no=request.POST['phone_no'])
-      #      obj.address1 = request.POST['address']
-      #      obj.product_id = a
-      #      obj.quantity = b
-      #      obj.save()
+                i = i + 1
+        #      obj.order_id = request.POST['order_id']
+        #      obj.phone_no = RegUser.objects.get(phone_no=request.POST['phone_no'])
+        #      obj.address1 = request.POST['address']
+        #      obj.product_id = a
+        #      obj.quantity = b
+        #      obj.save()
         response = {'success': 'true'}
 
         return JsonResponse(response)
 
-      #  order = Orders()
-      #  order.item = request.POST['item']
-      #  order.quantity = request.POST['quantity']
+    #  order = Orders()
+    #  order.item = request.POST['item']
+    #  order.quantity = request.POST['quantity']
 
-#class Place_Orders(APIView):
+
+# class Place_Orders(APIView):
 #    def post(self, request):
 #        serializer = OrdersSerializer(data=request.data)
 #        response = {'error': 'abc'}
@@ -309,7 +314,7 @@ def place_order(request):
 #                obj.save()
 #            return JsonResponse(serializer.data)
 #        return JsonResponse(serializer.errors)
-#>>>>>>> 69cc78c39b13022ce36ebd5835e6c98cc72efb13
+# >>>>>>> 69cc78c39b13022ce36ebd5835e6c98cc72efb13
 
 def subscribe_order(request):
     if request.method == 'POST':
@@ -317,38 +322,38 @@ def subscribe_order(request):
         ar1 = request.POST.getlist('items')
         ar2 = request.POST.getlist('quantities')
         print(request.POST.getlist('items'))
-        i=0
-        for a,b in zip(ar1,ar2):
-            if i==0:
+        i = 0
+        for a, b in zip(ar1, ar2):
+            if i == 0:
                 obj = Subscribed_Orders.objects.create(
-                    customer_phone = RegUser.objects.get(phone_no=request.POST['phone_no']),
-                    address = request.POST['address'],
-                    product_id = a,
-                    quantity = b,
+                    customer_phone=RegUser.objects.get(phone_no=request.POST['phone_no']),
+                    address=request.POST['address'],
+                    product_id=a,
+                    quantity=b,
                     start_date=request.POST['start_date'],
                     end_date=request.POST['end_date'],
                     delivery_time=request.POST['del_time'],
                 )
                 order_id = obj.sorder_id
-                i=i+1
+                i = i + 1
             else:
                 Subscribed_Orders.objects.create(
-                    customer_phone = RegUser.objects.get(phone_no=request.POST['phone_no']),
-                    address = request.POST['address'],
-                    product_id = a,
-                    quantity = b,
-                    sorder_id= order_id,
+                    customer_phone=RegUser.objects.get(phone_no=request.POST['phone_no']),
+                    address=request.POST['address'],
+                    product_id=a,
+                    quantity=b,
+                    sorder_id=order_id,
                     start_date=request.POST['start_date'],
                     end_date=request.POST['end_date'],
                     delivery_time=request.POST['del_time'],
                 )
-                i=i+1
+                i = i + 1
         response = {'success': 'true'}
 
         return JsonResponse(response)
 
-def save_address(request):
 
+def save_address(request):
     if request.method == "POST":
         form = AddressForm(request.POST)
         if form.is_valid():
@@ -360,7 +365,8 @@ def save_address(request):
             obj.pincode = form.cleaned_data['pincode']
             obj.phone_no = form.cleaned_data['phone']
             obj.save()
-            response = {'house_no': obj.house_no, 'street': obj.street, 'city': obj.city, 'landmark': obj.landmark, 'pincode': obj.pincode, 'phone_no': obj.phone}
+            response = {'house_no': obj.house_no, 'street': obj.street, 'city': obj.city, 'landmark': obj.landmark,
+                        'pincode': obj.pincode, 'phone_no': obj.phone}
             return JsonResponse(response)
         else:
             return JsonResponse({'Error': 'Invalid address !!!'})
@@ -378,12 +384,11 @@ def save_address(request):
             dict["phone_no"] = product.phone_no
             myAddresses.append(dict)
 
-        return JsonResponse({'addresses' : myAddresses})
-
+        return JsonResponse({'addresses': myAddresses})
 
 
 class save_address(APIView):
-    def post(self,request):
+    def post(self, request):
         response = JsonResponse({'Error': 'True'})
         add_serializer = RegAddresses(data=request.data)
         if add_serializer.is_valid():
@@ -391,23 +396,24 @@ class save_address(APIView):
             return JsonResponse(add_serializer.data)
         return JsonResponse(add_serializer.errors)
 
+
 class get_address(APIView):
-    def post(self,request):
-        address=(list(Addresses.objects.filter(phone_no=request.POST['phone_no']).values()))
-        #address = get_object_or_404(Addresses,phone_no=request.GET.get('phone_no'))
-        #print(address)
-        #hello={"hello":"12"}
-        return JsonResponse(address,safe=False)
+    def post(self, request):
+        address = (list(Addresses.objects.filter(phone_no=request.POST['phone_no']).values()))
+        # address = get_object_or_404(Addresses,phone_no=request.GET.get('phone_no'))
+        # print(address)
+        # hello={"hello":"12"}
+        return JsonResponse(address, safe=False)
+
 
 def distance(lat1, lon1, lat2, lon2):
-     p = 0.017453292519943295
-     a = 0.5 - cos((lat2-lat1)*p)/2+cos(lat1*p)*cos(lat2*p)*(1-cos((lon2-lon1)*p))/2
-     print(12742*asin(sqrt(a)))
-     return 12742*asin(sqrt(a))
+    p = 0.017453292519943295
+    a = 0.5 - cos((lat2 - lat1) * p) / 2 + cos(lat1 * p) * cos(lat2 * p) * (1 - cos((lon2 - lon1) * p)) / 2
+    print(12742 * asin(sqrt(a)))
+    return 12742 * asin(sqrt(a))
 
 
 def unique(list1):
-
     # intilize a null list
     unique_list = []
 
@@ -419,77 +425,89 @@ def unique(list1):
     # print list
     return unique_list
 
+
 def get_products(request):
     if request.method == "POST":
         mlong = float(request.POST['longitude'])
         mlat = float(request.POST['latitude'])
         mcity = request.POST['city']
 
-        vendors = Vendors.objects.filter(city = mcity)
+        vendors = Vendors.objects.filter(city=mcity)
         print(vendors)
         selected_vendors = []
         myProducts = []
 
-
         for vendor in vendors:
             print(type(mlat))
-            if(distance(mlat, mlong, vendor.vendor_lat, vendor.vendor_long) < 7):
+            if (distance(mlat, mlong, vendor.vendor_lat, vendor.vendor_long) < 7):
                 selected_vendors.append(vendor)
 
-
         for vendor in selected_vendors:
-            products = Vendor_Products.objects.filter(vendor_phone = vendor)
-            #products = (vendor.products.all())
-            #print(products.product_id)
-#<<<<<<< HEAD
+            products = Vendor_Products.objects.filter(vendor_phone=vendor)
+            # products = (vendor.products.all())
+            # print(products.product_id)
+            # <<<<<<< HEAD
 
             for product in products:
-                obj = CategorizedProducts.objects.filter(product_id = product.product_id)
+                obj = CategorizedProducts.objects.filter(product_id=product.product_id)
                 d = {}
-                d["under_category"]=obj[0].under_category.categoryName
-                d["product_name"]=obj[0].product_name
-                d["product_id"]=obj[0].product_id
-                d["product_price"]=obj[0].product_price
-                d["product_rating"]=obj[0].product_rating
-                d["product_descp"]=obj[0].product_descp
-                d["product_imagepath"]=obj[0].product_imagepath
-                #y = json.loads(d.replace("\"",''))
-                #list1=[]
+                d["under_category"] = obj[0].under_category.categoryName
+                d["product_name"] = obj[0].product_name
+                d["product_id"] = obj[0].product_id
+                d["product_price"] = obj[0].product_price
+                d["product_rating"] = obj[0].product_rating
+                d["product_descp"] = obj[0].product_descp
+                d["product_imagepath"] = obj[0].product_imagepath
+                # y = json.loads(d.replace("\"",''))
+                # list1=[]
                 myProducts.append((d))
-            #myProducts.add(list1)
-        myProducts=unique(myProducts)
+            # myProducts.add(list1)
+        myProducts = unique(myProducts)
         print(myProducts)
-        dict={"Prod":(myProducts)}
-        #print(myProducts)
-        #dict={"Prod":"13"}
-        #print(JsonResponse((myProducts),safe=False))
-
+        dict = {"Prod": (myProducts)}
+        # print(myProducts)
+        # dict={"Prod":"13"}
+        # print(JsonResponse((myProducts),safe=False))
 
         return JsonResponse(dict, safe=False)
 
     else:
-        return JsonResponse({'error' : 'Not a POST request'})
+        return JsonResponse({'error': 'Not a POST request'})
+
+
+def update_order(orderid, vendors, products, d_boys):
+    orders = Orders.objects.filter(order_id=orderid)
+    pl = len(products)
+    for i in range(vl):
+        pll = len(products[i])
+        for j in range(vll):
+            plll = len(products[i][j])
+            for k in pll:
+                obj = orders.get(product_id=products[i][j][k])
+                obj.update(vendor_phone=vendors[i][j],
+                           delivery_boy_phone=Delivery_Boys.objects.get(phone_no=d_boys[i][j]))
+
 
 @background(schedule=30)
 def place_subscribed_order(repeat=30):
     now = timezone.now()
     sorders = Subscribed_Orders.objects.filter(
-        start_date__lte = now.date(),
-        end_date__gte = now.date(), 
-        delivery_time__gte = now.time(),
-        delivery_time__lte = now + datetime.timedelta(minutes=5)
+        start_date__lte=now.date(),
+        end_date__gte=now.date(),
+        delivery_time__gte=now.time(),
+        delivery_time__lte=now + datetime.timedelta(minutes=5)
     )
     sorders_unique = sorders.values("sorder_id").distinct()
     print(sorders_unique)
     for sorder in sorders_unique:
         print(sorder['sorder_id'])
-        orders = Subscribed_Orders.objects.filter(sorder_id = sorder['sorder_id'])
+        orders = Subscribed_Orders.objects.filter(sorder_id=sorder['sorder_id'])
         items = []
         quantities = []
-        l=orders.count()
+        l = orders.count()
         print(orders)
         print(l)
-        if l>0:
+        if l > 0:
             for order in orders:
                 print(order.product_id)
                 items.append(order.product_id.product_id)
@@ -503,16 +521,17 @@ def place_subscribed_order(repeat=30):
             #        # create a new array in this slot
             #        post_data['items'] = [order.quantity]
             post_data = {
-                'phone_no' : orders[0].customer_phone.phone_no,
-                'vendor_phone' : orders[0].vendor_phone.phone_no,
-                'address' : orders[0].address,
-                'items' : items,
-                'quantities' : quantities
+                'phone_no': orders[0].customer_phone.phone_no,
+                'vendor_phone': orders[0].vendor_phone.phone_no,
+                'address': orders[0].address,
+                'items': items,
+                'quantities': quantities
             }
             print(post_data)
-        #    result = urllib.request.urlopen('http://127.0.0.1:8000/place_order/', urllib.parse.urlencode(post_data).encode('utf-8'))
-        #    content = result.read()
-        #    print(content)
-            r = requests.post(url = 'http://127.0.0.1:8000/place_order/', data = post_data)
+            #    result = urllib.request.urlopen('http://127.0.0.1:8000/place_order/', urllib.parse.urlencode(post_data).encode('utf-8'))
+            #    content = result.read()
+            #    print(content)
+            r = requests.post(url='http://127.0.0.1:8000/place_order/', data=post_data)
+
 
 place_subscribed_order()

@@ -76,6 +76,7 @@ class Vendors(models.Model):
 class Serving_Vendors(models.Model):
     phone_no = models.ForeignKey(Vendors, to_field="phone_no", on_delete=models.CASCADE)
     order_id = models.CharField(max_length=500)
+    
 
 class Vendor_Products(models.Model):
     serial = models.AutoField(primary_key=True)
