@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'base_tech',
-    'background_task',
+   # 'background_task',
     'paytm',
     'channels',
     'rest_framework',
