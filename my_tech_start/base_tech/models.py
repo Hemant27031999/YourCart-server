@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 import uuid
-
+import json
 
 # Create your models here.
 class RegUser(models.Model):
@@ -28,6 +28,9 @@ class CategorizedProducts(models.Model):
     product_rating = models.FloatField()
     product_descp = models.CharField(max_length=255)
     product_imagepath = models.CharField(max_length=255, default='media/images/clothing.png')
+    def toJSON(self):
+        return json.dumps(self, default=lambda o: o.__dict__)
+    #vendors = models.ManyToManyField(Vendors)
 
     def __str__(self):
         return self.product_name
@@ -46,6 +49,8 @@ class Addresses(models.Model):
     landmark = models.CharField(max_length=100)
     pincode = models.IntegerField()
     phone_no = models.ForeignKey(RegUser, to_field='phone_no', on_delete=models.CASCADE)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
 
 class indep_Addresses(models.Model):
     house_no = models.CharField(max_length=10)
@@ -54,12 +59,19 @@ class indep_Addresses(models.Model):
     landmark = models.CharField(max_length=100)
     pincode = models.IntegerField()
 
+
+class Cells(models.Model):
+    Cell_id = models.IntegerField(primary_key=True)
+    Cell_lat = models.FloatField()
+    Cell_long = models.FloatField()
+    no_vendor = models.IntegerField()
+
 class Vendors(models.Model):
     phone_no = models.CharField(primary_key=True, max_length=255)
     vendor_lat = models.FloatField()
     vendor_long = models.FloatField()
     city = models.CharField(unique=False, max_length=255)
-    cell_no = models.IntegerField()
+    cell = models.ForeignKey(Cells, on_delete =models.CASCADE)
     STATUS = [
         ('A', 'Active'),
         ('I', 'Inactive'),
@@ -83,11 +95,7 @@ class Vendor_Products(models.Model):
     product_id = models.IntegerField()
     vendor_phone = models.ForeignKey(Vendors, on_delete=models.CASCADE)
 
-class Cells(models.Model):
-    cell_no = models.IntegerField(primary_key=True)
-    cell_lat = models.FloatField()
-    cell_long = models.FloatField()
-    no_vendor = models.IntegerField()
+
 
 class Delivery_Boys(models.Model):
     name = models.CharField(max_length=255)
