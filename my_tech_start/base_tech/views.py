@@ -487,7 +487,6 @@ def update_order(orderid, vendors, products, d_boys):
                 obj.update(vendor_phone=vendors[i][j],
                            delivery_boy_phone=Delivery_Boys.objects.get(phone_no=d_boys[i][j]))
 
-
 @background(schedule=30)
 def place_subscribed_order(repeat=30):
     now = timezone.now()
