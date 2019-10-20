@@ -134,6 +134,8 @@ class Subscribed_Orders(models.Model):
         ('E', 'Expired'),
     ]
     status = models.CharField(max_length=20, choices=STATUS,default='A')
+    cust_lat = models.CharField(max_length=50, blank=True, null=True)
+    cust_long = models.CharField(max_length=50, blank=True, null=True)
 
 class Orders(models.Model):
     order_id = models.CharField(primary_key=False, editable=True, default=uuid.uuid4, max_length=500)
