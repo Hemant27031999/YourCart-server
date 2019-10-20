@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_extensions',
     'vendor_side',
+    'delivery_side',
     'django_crontab',
 ]
 
