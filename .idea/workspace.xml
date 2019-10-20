@@ -2,17 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ff1513cb-1ee9-4969-943d-883e8b3b8f3a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/my_tech_start/base_tech/cron.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/django-tech-start.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/django-tech-start.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/my_tech_start/base_tech/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/my_tech_start/base_tech/admin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/my_tech_start/base_tech/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/my_tech_start/base_tech/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/my_tech_start/base_tech/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/my_tech_start/base_tech/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/my_tech_start/my_tech_start/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/my_tech_start/my_tech_start/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/my_tech_start/my_tech_start/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/my_tech_start/my_tech_start/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/my_tech_start/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/my_tech_start/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
