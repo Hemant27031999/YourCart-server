@@ -46,12 +46,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'base_tech',
-    'background_task',
+    #'background_task',
     'paytm',
     'channels',
     'rest_framework',
     'django_extensions',
     'vendor_side',
+    'django_crontab',
 ]
 
 MIDDLEWARE = [
@@ -64,6 +65,10 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+]
+
+CRONJOBS = [
+('*/5 * * * *', 'base_tech.cron.place_subscribed_order')
 ]
 
 ROOT_URLCONF = 'my_tech_start.urls'

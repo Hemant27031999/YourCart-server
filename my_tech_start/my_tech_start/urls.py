@@ -17,6 +17,7 @@ from django.conf import settings
 from django.contrib import admin
 from django.urls import path
 from base_tech import views
+#from base_tech.views import place_subscribed_order
 from django.contrib.auth import views as auth_views
 from django.conf.urls import include
 from django.contrib.staticfiles.urls import static
@@ -51,6 +52,8 @@ urlpatterns = [
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
+
+#place_subscribed_order(repeat=18000,schedule=10, repeat_until=None)
 
 if settings.DEBUG:
         urlpatterns += static(settings.MEDIA_URL,

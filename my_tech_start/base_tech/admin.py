@@ -15,3 +15,7 @@ admin.site.register(Serving_Vendors)
 admin.site.register(Delivery_Boys)
 admin.site.register(Deliverying_Boys)
 admin.site.register(Subscribed_Orders)
+
+
+class OrdersAdmin(admin.ModelAdmin):
+    list_display = ('order_id', 'product_id', 'customer_phone', 'order_time')

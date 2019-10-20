@@ -13,10 +13,9 @@ from math import cos, asin, sqrt
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 import itertools
-from background_task import background
+#from background_task import background
 from django.utils import timezone
 import datetime
-import urllib.request
 import requests
 from django.utils.safestring import mark_safe
 import json
@@ -476,6 +475,7 @@ def place_order(request):
                     cust_long=request.POST['cust_long']
                 )
                 order_id = obj.order_id
+                print(obj.order_time)
                 i = i + 1
             else:
                 Orders.objects.create(
@@ -497,11 +497,12 @@ def place_order(request):
         #      obj.save()
         response = {'success': 'true'}
 
+
         i=0
         #cells = list(Cells.objects.filter(city = user_address[0].city))
         cells_all = list((Cells.objects.all()))
         cells = []
-        print("cells_all",cells_all[1].Cell_lat," ",cells_all[1].Cell_long)
+      #  print("cells_all",cells_all[1].Cell_lat," ",cells_all[1].Cell_long)
         for cell in cells_all:
             print(user_address[0].latitude," ",user_address[0].longitude," " , cell.Cell_lat," ", cell.Cell_long)
             if(distance(user_address[0].latitude,user_address[0].longitude , cell.Cell_lat, cell.Cell_long) < 7):
@@ -755,50 +756,54 @@ def update_order(orderid, vendors, products, d_boys):
                 obj.update(vendor_phone=vendors[i][j],
                            delivery_boy_phone=Delivery_Boys.objects.get(phone_no=d_boys[i][j]))
 
-@background(schedule=30)
-def place_subscribed_order(repeat=30):
-    now = timezone.now()
-    sorders = Subscribed_Orders.objects.filter(
-        start_date__lte=now.date(),
-        end_date__gte=now.date(),
-        delivery_time__gte=now.time(),
-        delivery_time__lte=now + datetime.timedelta(minutes=5)
-    )
-    sorders_unique = sorders.values("sorder_id").distinct()
-    print(sorders_unique)
-    for sorder in sorders_unique:
-        print(sorder['sorder_id'])
-        orders = Subscribed_Orders.objects.filter(sorder_id=sorder['sorder_id'])
-        items = []
-        quantities = []
-        l = orders.count()
-        print(orders)
-        print(l)
-        if l > 0:
-            for order in orders:
-                print(order.product_id)
-                items.append(order.product_id.product_id)
-                quantities.append(order.quantity)
-            #    post_data.append(('items',order.product_id.product_id))
-            #    post_data.append(('quantities',order.quantity))
-            #    if line[0] in years_dict:
-            #        # append the new number to the existing array at this slot
-            #        post_data['items'].append(order.product_id.product_id)
-            #    else:
-            #        # create a new array in this slot
-            #        post_data['items'] = [order.quantity]
-            post_data = {
-                'phone_no': orders[0].customer_phone.phone_no,
-                'vendor_phone': orders[0].vendor_phone.phone_no,
-                'address': orders[0].address,
-                'items': items,
-                'quantities': quantities
-            }
-            print(post_data)
-            #    result = urllib.request.urlopen('http://127.0.0.1:8000/place_order/', urllib.parse.urlencode(post_data).encode('utf-8'))
-            #    content = result.read()
-            #    print(content)
-            r = requests.post(url='http://127.0.0.1:8000/place_order/', data=post_data)
+
+#@background()
+#def place_subscribed_order():
+#    now = timezone.now()
+#    sorders = Subscribed_Orders.objects.filter(
+#        start_date__lte=now.date(),
+#        end_date__gte=now.date(),
+#        delivery_time__gte=now.time(),
+#        delivery_time__lte=now + datetime.timedelta(minutes=5)
+#    )
+#    sorders_unique = sorders.values("sorder_id").distinct()
+#    print(sorders_unique)
+#    l1 = sorders_unique.count()
+#    for u in range(l1):
+#        print(sorders_unique[u]['sorder_id'])
+#        orders = Subscribed_Orders.objects.filter(sorder_id=sorders_unique[u]['sorder_id'])
+#        items = []
+#        quantities = []
+#        l = orders.count()
+#        print(orders)
+#        print(l)
+#        for i in range(l):
+#            print(orders[i].product_id)
+#            items.append(orders[i].product_id.product_id)
+#            quantities.append(orders[i].quantity)
+#        #    post_data.append(('items',order.product_id.product_id))
+#        #    post_data.append(('quantities',order.quantity))
+#        #    if line[0] in years_dict:
+#        #        # append the new number to the existing array at this slot
+#        #        post_data['items'].append(order.product_id.product_id)
+#        #    else:
+#        #        # create a new array in this slot
+#        #        post_data['items'] = [order.quantity]
+#        post_data = {
+#            'phone_no': orders[0].customer_phone.phone_no,
+#            'vendor_phone': orders[0].vendor_phone.phone_no,
+#            'address': orders[0].address,
+#            'items': items,
+#            'quantities': quantities,
+#            'cust_lat': orders[0].cust_lat,
+#            'cust_long': orders[0].cust_long
+#        }
+#        print(post_data)
+#        print(orders[0].sorder_id)
+#        #    result = urllib.request.urlopen('http://127.0.0.1:8000/place_order/', urllib.parse.urlencode(post_data).encode('utf-8'))
+#        #    content = result.read()
+#        #    print(content)
+#        r = requests.post(url='http://127.0.0.1:8000/place_order/', data=post_data)
 
 
-place_subscribed_order()
+
