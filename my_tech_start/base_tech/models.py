@@ -33,7 +33,7 @@ class CategorizedProducts(models.Model):
     #vendors = models.ManyToManyField(Vendors)
 
     def __str__(self):
-        return self.product_name
+        return str(self.product_id)
 
 
 class Hotel(models.Model):
@@ -128,8 +128,8 @@ class Subscribed_Orders(models.Model):
     sorder_id = models.CharField(primary_key=False, editable=True, default=uuid.uuid4, max_length=100)
     customer_phone = models.ForeignKey(RegUser, on_delete=models.CASCADE)
     delivery_time = models.TimeField((u"Delivery time"))
-    start_date = models.DateField((u"Start date"))
-    end_date = models.DateField((u"End date"))
+    delivery_dates = models.CharField(max_length=200)
+    delivery_month = models.IntegerField()
     vendor_phone = models.ForeignKey(Vendors, on_delete=models.PROTECT, blank=True, null=True)
     product_id = models.ForeignKey(CategorizedProducts, on_delete=models.PROTECT)
     quantity = models.IntegerField()
