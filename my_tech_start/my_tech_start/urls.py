@@ -33,6 +33,7 @@ urlpatterns = [
     # path('signup1/', csrf_exempt(views.SignUp1.as_view()), name='signup'),
     path('signup1/', views.signup1, name='signup1'),
     path('place_order/', views.place_order, name='place_order'),
+    path('subscribe_order/', views.subscribe_order, name='subscribe_order'),
     path('getaccess/', views.getaccess, name='getaccess'),
     path('login/', views.loginuser, name='loginuser'),
     path('paytm/', include('paytm.urls')),

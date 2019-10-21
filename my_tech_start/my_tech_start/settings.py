@@ -29,7 +29,6 @@ LOGIN_REDIRECT_URL = 'index'
 ALLOWED_HOSTS = ['*']
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
 BACKGROUND_TASK_RUN_ASYNC = True
 USE_TZ = True
 TIME_ZONE =  'Asia/Kolkata'
@@ -48,7 +47,7 @@ INSTALLED_APPS = [
     'base_tech',
     #'background_task',
     'paytm',
-    'channels',
+  #  'channels',
     'rest_framework',
     'django_extensions',
     'vendor_side',
@@ -69,20 +68,20 @@ MIDDLEWARE = [
 ]
 
 CRONJOBS = [
-('*/5 * * * *', 'base_tech.cron.place_subscribed_order')
+    ('15,30 6-18 * * *', 'base_tech.cron.place_subscribed_order')
 ]
 
 ROOT_URLCONF = 'my_tech_start.urls'
 
 
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": [('127.0.0.1', 6379)],
-        },
-    },
-}
+#CHANNEL_LAYERS = {
+#    'default': {
+#        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+#        'CONFIG': {
+#            "hosts": [('127.0.0.1', 6379)],
+#        },
+#    },
+#}
 
 TEMPLATES = [
     {
@@ -101,7 +100,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'my_tech_start.wsgi.application'
-ASGI_APPLICATION = 'my_tech_start.routing.application'
+#ASGI_APPLICATION = 'my_tech_start.routing.application'
 #ALLOWED_HOSTS = ['secure-plateau-67455.herokuapp.com']
 # CSRF_USE_SESSIONS = True
 
