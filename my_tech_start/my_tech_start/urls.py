@@ -44,6 +44,7 @@ urlpatterns = [
     path('getProducts/', views.get_products, name='getProducts'),
     path('address/', views.save_address.as_view(),name='save_address'),
     path('get_address/', views.get_address.as_view(),name='save_address'),
+    path('confirm_order/',views.Order_confirm, name = 'comfirm_order'),
     # path('<str:image_id>/', views.useid, name='useid'),
     # path('login/', auth_views.LoginView.as_view(template_name="base_tech/login.html"), name='login'),
     # path('logout/', auth_views.LogoutView, name='logout'),

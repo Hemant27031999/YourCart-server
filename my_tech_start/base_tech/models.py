@@ -84,6 +84,7 @@ class Cells(models.Model):
     Cell_lat = models.FloatField()
     Cell_long = models.FloatField()
     no_vendor = models.IntegerField()
+    city = models.CharField(unique=False, max_length=255, default = "Roorkee")
 
 
 class Vendors(models.Model):
@@ -131,7 +132,11 @@ class Delivery_Boys(models.Model):
     )
     total_no_orders = models.IntegerField()
     current_no_orders = models.IntegerField()
-    busy = models.CharField(max_length=20, blank=True)
+    busy = models.BooleanField(default = False)
+    city = models.CharField(unique=False, max_length=255)
+    #delete later
+    lat = models.FloatField(default = 28.33)
+    long = models.FloatField(default = 77.88)
 
 class Deliverying_Boys(models.Model):
     phone_no = models.ForeignKey(Delivery_Boys, to_field='phone_no', on_delete=models.CASCADE)
