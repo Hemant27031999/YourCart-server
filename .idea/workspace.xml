@@ -1,23 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ff1513cb-1ee9-4969-943d-883e8b3b8f3a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/my_tech_start/base_tech/migrations/0006_merge_20191021_1336.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/my_tech_start/base_tech/migrations/0007_auto_20191021_2006.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/my_tech_start/base_tech/consumers.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/my_tech_start/base_tech/cron.py" beforeDir="false" afterPath="$PROJECT_DIR$/my_tech_start/base_tech/cron.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/my_tech_start/base_tech/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/my_tech_start/base_tech/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/my_tech_start/base_tech/routing.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/my_tech_start/base_tech/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/my_tech_start/base_tech/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/my_tech_start/base_tech/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/my_tech_start/base_tech/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/my_tech_start/delivery_side/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/my_tech_start/delivery_side/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/my_tech_start/delivery_side/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/my_tech_start/delivery_side/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/my_tech_start/my_tech_start/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/my_tech_start/my_tech_start/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/my_tech_start/my_tech_start/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/my_tech_start/my_tech_start/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/my_tech_start/vendor_side/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/my_tech_start/vendor_side/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/my_tech_start/vendor_side/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/my_tech_start/vendor_side/views.py" afterDir="false" />
-    </list>
+    <list default="true" id="ff1513cb-1ee9-4969-943d-883e8b3b8f3a" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
