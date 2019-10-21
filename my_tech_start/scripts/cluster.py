@@ -3,6 +3,7 @@ import pandas as pd
 from sklearn.cluster import DBSCAN 
 from geopy.distance import geodesic
 from sklearn import metrics
+from math import cos, sin, atan2, sqrt, radians, degrees
 import mpl_toolkits
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler 
@@ -19,8 +20,11 @@ def clusterer():
 	X = pd.read_csv('out.csv', names=colnames)
 	
 	print(X.head())
+
 	
 	Y = X[['vendor_lat', 'vendor_long']].values
+
+	print(Y[0][0])
 	
 	def distance(x, y):
 		lat1, long1 = x[0], x[1]
@@ -52,6 +56,38 @@ def unique(list1):
             unique_list.append(x)
     return unique_list
 
+def avglatlong(Y):
+	print(Y)
+	l = len(Y)
+	print(l)
+	x1 = 0
+	y1 = 0
+	z1 = 0
+	
+	for i in range(l):
+		print(Y[i][0])
+		print(Y[i][1])
+		lattitude = radians(90-Y[i][0])
+		longitude = radians(Y[i][1])
+		x = sin(lattitude)*cos(longitude)
+		y = sin(lattitude)*sin(longitude)
+		z = cos(lattitude)
+		print(x,y,z)
+		x1 = x1 + x
+		y1 = y1 + y
+		z1 = z1 + z
+
+	print(x1,y1,z1)	
+	x1 = x1/l
+	y1 = y1/l
+	z1 = z1/l
+	print(x1,y1,z1)
+	avg_lat = np.rad2deg(atan2(z1, sqrt((x1*x1)+(y1*y1))))
+	avg_long = np.rad2deg(atan2(y1,x1))
+	avg = [avg_lat]
+	avg.append(avg_long)
+	print(avg)
+	return avg
 
 def exportcsv():
 
@@ -90,7 +126,15 @@ def run():
 		ven = Vendors.objects.filter(cell_no = b[i])
 		print(ven)
 		no = len(ven)
-		obj = Cells(cell_no=b[i], cell_lat=ven[0].vendor_lat, cell_long=ven[0].vendor_long, no_vendor=no)
+		list1 = []
+		for j in range(no):
+			temp = [ven[j].vendor_lat]
+			temp.append(ven[j].vendor_long)
+			list1.append(temp)
+		print(list1)
+		avg = avglatlong(list1)
+		
+		obj = Cells(cell_no=b[i], cell_lat=avg[0], cell_long=avg[1], no_vendor=no)
 		objs.append(obj)
 	
 	Cells.objects.bulk_create(objs, n2)

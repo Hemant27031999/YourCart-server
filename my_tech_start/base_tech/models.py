@@ -59,25 +59,6 @@ class indep_Addresses(models.Model):
     landmark = models.CharField(max_length=100)
     pincode = models.IntegerField()
 
-class Orders(models.Model):
-    order_id = models.CharField(primary_key=False, editable=True, default=uuid.uuid4, max_length=500)
-    product_id = models.IntegerField()
-    quantity = models.IntegerField(default=1)
-    order_date = models.DateField((u"Order date"), auto_now_add=True)
-    order_time = models.TimeField((u"Order time"), auto_now_add=True)
-    address = models.CharField(max_length=500)
-    customer_phone = models.ForeignKey(RegUser, to_field='phone_no', on_delete=models.CASCADE)
-    vendor_phone = models.CharField(max_length=500, blank=True)
-   # delivery_boy_phone = models.ForeignKey(Delivery_Boys, on_delete=models.PROTECT)
-    ORDER_STATUS = (
-        ('D', 'Delivered'),
-        ('A', 'Active')
-    )
-    order_status = models.CharField(max_length=50, choices=ORDER_STATUS, default='A')
-
-    def __str__(self):
-        return self.order_id
-
 
 class Cells(models.Model):
     Cell_id = models.IntegerField(primary_key=True)
@@ -85,7 +66,6 @@ class Cells(models.Model):
     Cell_long = models.FloatField()
     no_vendor = models.IntegerField()
     city = models.CharField(unique=False, max_length=255, default = "Roorkee")
-
 
 class Vendors(models.Model):
     phone_no = models.CharField(primary_key=True, max_length=255)
@@ -104,11 +84,12 @@ class Vendors(models.Model):
     )
     total_no_orders = models.IntegerField(default=0)
     current_no_orders = models.IntegerField(default=0)
-    busy = models.CharField(max_length=20, blank=True)
+    busy = models.CharField(max_length=20, blank=True, null=True)
 
 class Serving_Vendors(models.Model):
     phone_no = models.ForeignKey(Vendors, to_field="phone_no", on_delete=models.CASCADE)
     order_id = models.CharField(max_length=500)
+
 
 class Vendor_Products(models.Model):
     serial = models.AutoField(primary_key=True)
@@ -142,3 +123,42 @@ class Deliverying_Boys(models.Model):
     phone_no = models.ForeignKey(Delivery_Boys, to_field='phone_no', on_delete=models.CASCADE)
     order_id = models.CharField(max_length=500)
     vendor_phone = models.ForeignKey(Vendors, on_delete=models.PROTECT)
+
+class Subscribed_Orders(models.Model):
+    sorder_id = models.CharField(primary_key=False, editable=True, default=uuid.uuid4, max_length=100)
+    customer_phone = models.ForeignKey(RegUser, on_delete=models.CASCADE)
+    delivery_time = models.TimeField((u"Delivery time"))
+    start_date = models.DateField((u"Start date"))
+    end_date = models.DateField((u"End date"))
+    vendor_phone = models.ForeignKey(Vendors, on_delete=models.PROTECT, blank=True, null=True)
+    product_id = models.ForeignKey(CategorizedProducts, on_delete=models.PROTECT)
+    quantity = models.IntegerField()
+    address = models.CharField(max_length=255)
+    STATUS = [
+        ('A', 'Active'),
+        ('E', 'Expired'),
+    ]
+    status = models.CharField(max_length=20, choices=STATUS,default='A')
+    cust_lat = models.CharField(max_length=50, blank=True, null=True)
+    cust_long = models.CharField(max_length=50, blank=True, null=True)
+
+class Orders(models.Model):
+    order_id = models.CharField(primary_key=False, editable=True, default=uuid.uuid4, max_length=500)
+    product_id = models.ForeignKey(CategorizedProducts, on_delete=models.PROTECT)
+    quantity = models.IntegerField(default=1)
+    order_date = models.DateField((u"Order date"), auto_now_add=True)
+    order_time = models.TimeField((u"Order time"), auto_now_add=True)
+    address = models.CharField(max_length=500)
+    customer_phone = models.ForeignKey(RegUser, to_field='phone_no', on_delete=models.CASCADE)
+    vendor_phone = models.CharField(max_length=500, blank=True, null=True)
+    delivery_boy_phone = models.ForeignKey(Delivery_Boys, on_delete=models.PROTECT, null=True, blank=True)
+    ORDER_STATUS = (
+        ('D', 'Delivered'),
+        ('A', 'Active')
+    )
+    order_status = models.CharField(max_length=50, choices=ORDER_STATUS, default='A')
+    cust_lat = models.CharField(max_length=50, blank=True, null=True)
+    cust_long = models.CharField(max_length=50, blank=True, null=True)
+
+    def __str__(self):
+        return self.order_id

@@ -17,6 +17,7 @@ from django.conf import settings
 from django.contrib import admin
 from django.urls import path
 from base_tech import views
+#from base_tech.views import place_subscribed_order
 from django.contrib.auth import views as auth_views
 from django.conf.urls import include
 from django.contrib.staticfiles.urls import static
@@ -44,13 +45,17 @@ urlpatterns = [
     path('getProducts/', views.get_products, name='getProducts'),
     path('address/', views.save_address.as_view(),name='save_address'),
     path('get_address/', views.get_address.as_view(),name='save_address'),
-    path('confirm_order/',views.Order_confirm, name = 'comfirm_order'),
+    path('chat/', include('base_tech.urls')),
+    path('vendor/', include('vendor_side.urls')),
+    path('delivery/', include('delivery_side.urls')),
     # path('<str:image_id>/', views.useid, name='useid'),
     # path('login/', auth_views.LoginView.as_view(template_name="base_tech/login.html"), name='login'),
     # path('logout/', auth_views.LogoutView, name='logout'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
+
+#place_subscribed_order(repeat=18000,schedule=10, repeat_until=None)
 
 if settings.DEBUG:
         urlpatterns += static(settings.MEDIA_URL,
