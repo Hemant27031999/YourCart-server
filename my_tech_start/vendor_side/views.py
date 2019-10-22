@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from .models import *
 from base_tech.models import *
-from django.http import JsonResponse, HttpResponse, FileResponse
+from django.http import JsonResponse, HttpResponseForbidden, FileResponse
 from pusher import Pusher
 
 pusher = Pusher(app_id=u'884349', key=u'7c495f369f4053064877', secret=u'1f0f6089002fcb5d3ce1', cluster=u'ap2', ssl=True)
@@ -17,6 +17,7 @@ def check_vendor(request):
 				'vendor_id': request.POST['vendor_id'],
 				'found': 'true'
 			}
+
 		except:
 			response = {
 				'vendor_phone': '',
@@ -48,7 +49,7 @@ def send_prev_products(request):
 				'prod_rating': obj.product_rating,
 				'prod_desc': obj.product_descp,
 				'prod_img': obj.product_imagepath,
-				'check': True
+				'check': False
 			}
 			obj_list.append(prod)
 		data = {
@@ -58,6 +59,29 @@ def send_prev_products(request):
 		return JsonResponse(data)
 
 
+def pusher_authentication(request):
+	auth = pusher.authenticate(
+		channel="private-"+request.POST['vendor_phone'],
+		socket_id='1234.1234'
+	)
+	return JsonResponse(auth)
+
+
+#def pusher_auth(request):
+#	if not request.user.is_authenticated:
+#		return HttpResponseForbidden()
+#
+#	if not request.user.is_member_of_team('designers'):
+#		return HttpResponseForbidden()
+#
+#	pusher_client = Pusher(APP_ID, API_KEY, SECRET_KEY, CLUSTER)
+#
+#	# We must generate the token with pusher's service
+#	payload = pusher_client.authenticate(
+#		channel=request.POST['channel_name'],
+#		socket_id=request.POST['socket_id'])
+#
+#	return JsonResponse(payload)
 
 
 def send_all_products(request):
@@ -117,8 +141,8 @@ def activate(request):
 		else:
 			obj.update(status='I')
 		response = {
-			'vendor_phone' : request.POST['vendor_phone'],
-			'success' : 'true'
+			'vendor_phone': request.POST['vendor_phone'],
+			'success': 'true'
 		}
 		return JsonResponse(response)
 	response = {
@@ -148,10 +172,10 @@ def pusher_check(request):
 	#}
 	#pusher.trigger('my-channel', 'my-event', data)
 	#return JsonResponse(data)
-	send_order('098')
+	send_order('098', '0987', '09876')
 
 
-def send_order(order_id, items, quantities, ):
+def send_order(order_id, items, quantities):
 	data = {
 		'vendor_phone': '987654',
 		'order_id': order_id,
@@ -159,7 +183,7 @@ def send_order(order_id, items, quantities, ):
 		'quantities': quantities
 	}
 	print(data)
-	pusher.trigger('my-channel', 'my-event', data)
+	pusher.trigger('private-98765', 'my-event', data)
 
 
 def order_prepared(request):
