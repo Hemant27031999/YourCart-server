@@ -36,11 +36,6 @@ class Object:
 def user_list(request):
     return render(request, 'base_tech/abc.html', {})
 
-def room(request, room_name):
-    return render(request, 'base_tech/room.html', {
-        'room_name_json': mark_safe(json.dumps(room_name))
-    })
-
 # DEFAULT page
 def index(request):
     print(request.scheme)
@@ -934,6 +929,18 @@ def subscribe_order(request):
         ar1 = request.POST.getlist('items')
         ar2 = request.POST.getlist('quantities')
         print(request.POST.getlist('items'))
+        dates = "[ "
+        for d in request.POST['dates']:
+            date = str(d)
+            date.join(" ")
+            dates.join(date)
+        dates.join("]")
+        months = "[ "
+        for m in request.POST['months']:
+            month = str(m)
+            month.join(" ")
+            months.join(month)
+        months.join("]")
         i = 0
         for a, b in zip(ar1, ar2):
             if i == 0:
@@ -942,8 +949,8 @@ def subscribe_order(request):
                     address=request.POST['address'],
                     product_id=a,
                     quantity=b,
-                    start_date=request.POST['start_date'],
-                    end_date=request.POST['end_date'],
+                    delivery_dates=dates,
+                    delivery_months=months,
                     delivery_time=request.POST['del_time'],
                 )
                 order_id = obj.sorder_id
@@ -955,8 +962,8 @@ def subscribe_order(request):
                     product_id=a,
                     quantity=b,
                     sorder_id=order_id,
-                    start_date=request.POST['start_date'],
-                    end_date=request.POST['end_date'],
+                    delivery_dates=dates,
+                    delivery_months=months,
                     delivery_time=request.POST['del_time'],
                 )
                 i = i + 1
