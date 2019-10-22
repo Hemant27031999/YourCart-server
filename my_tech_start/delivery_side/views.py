@@ -174,7 +174,7 @@ def order_pickedup(request):
     if request.method == 'POST':
         data = {
             'order_id': request.POST['order_id'],
-            'status': 'picked up'
+            'status': 'pickedup'
         }
         pusher.trigger('my-channel', 'my-event', data)
         response = {'success': 'true'}

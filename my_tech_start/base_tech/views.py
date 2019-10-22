@@ -1060,7 +1060,7 @@ def get_products(request):
 
         for vendor in vendors:
             print(type(mlat))
-            if (distance(mlat, mlong, vendor.vendor_lat, vendor.vendor_long) < 7):
+            if distance(mlat, mlong, vendor.vendor_lat, vendor.vendor_long) < 7:
                 selected_vendors.append(vendor)
 
         for vendor in selected_vendors:
