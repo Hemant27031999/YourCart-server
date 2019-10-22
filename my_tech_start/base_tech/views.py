@@ -503,7 +503,8 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,use
     final_deliverBoy = []
     deliveryBoy_list = list(Delivery_Boys.objects.filter(city = city,status="A",busy="False"))
     # city = city, ))
-
+    checkpoint_lat = user_latitude
+    checkpoint_long = user_longitude
     # , status = 'I',busy = False))
     print("deliveryBoy_list",deliveryBoy_list)
     min_checkpoint = 1000
@@ -567,7 +568,7 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,use
         #data sent
         #data received
         #if confirmed:
-        count_sector = 0
+    count_sector = 0
 
 
 

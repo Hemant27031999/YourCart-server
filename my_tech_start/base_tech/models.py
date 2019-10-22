@@ -93,7 +93,7 @@ class Serving_Vendors(models.Model):
 
 
 class Vendor_Products(models.Model):
-    product_id = models.ForeignKey(CategorizedProducts, on_delete=models.CASCADE)
+    product_id = models.CharField(max_length = 255,default= "001")
     vendor_phone = models.ForeignKey(Vendors, on_delete=models.CASCADE)
 
 
