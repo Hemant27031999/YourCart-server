@@ -53,7 +53,6 @@ def send_prev_products(request):
 			obj_list.append(prod)
 		data = {
 			'no_prod': no_prod,
-			'vendor_phone': request.POST['vendor_phone'],
 			'products': obj_list
 		}
 		return JsonResponse(data)
