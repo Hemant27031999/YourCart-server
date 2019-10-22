@@ -13,8 +13,8 @@ class RegUser(models.Model):
 
 class Category(models.Model):
     categoryId = models.IntegerField(primary_key=True)
-    categoryName = models.CharField(unique=True, max_length=255)
-    categoryImagePath = models.CharField(unique=True, max_length=255)
+    categoryName = models.CharField(max_length=255)
+    categoryImagePath = models.CharField(max_length=255)
 
     def __str__(self):
         return self.categoryName
