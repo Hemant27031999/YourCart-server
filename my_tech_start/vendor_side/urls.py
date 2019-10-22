@@ -9,4 +9,5 @@ urlpatterns = [
     path('send/', views.pusher_check),
     path('get_products/', views.send_all_products, name='getproducts'),
     path('prepared/', views.order_prepared, name='prepared'),
+    path('get_prev_products/', views.send_prev_products, name='prevproducts'),
 ]

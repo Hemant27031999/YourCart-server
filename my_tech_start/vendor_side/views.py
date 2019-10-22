@@ -10,28 +10,54 @@ pusher = Pusher(app_id=u'884349', key=u'7c495f369f4053064877', secret=u'1f0f6089
 # Create your views here.
 def check_vendor(request):
 	if request.method == 'POST':
-		obj = Vendors.objects.get(vendor_id=request.POST['vendor_id'])
-		if obj is not None:
+		try:
+			obj = Vendors.objects.get(vendor_id=request.POST['vendor_id'])
 			response = {
-				'vendor_phone' : obj.phone_no,
-				'vendor_id' : request.POST['vendor_id'],
-				'found' : 'true'
+				'vendor_phone': obj.phone_no,
+				'vendor_id': request.POST['vendor_id'],
+				'found': 'true'
 			}
-		else:
+		except:
 			response = {
-				'vendor_phone' : '',
-				'vendor_id' : request.POST['vendor_id'],
-				'found' : 'false'
+				'vendor_phone': '',
+				'vendor_id': request.POST['vendor_id'],
+				'found': 'false'
 			}
 		return JsonResponse(response)
 	response = {
-		'error' : 'Invalid'
+		'error': 'Invalid'
 	}
 	return JsonResponse(response)
 
-#def send_prev_products(request):
-#	if request.method == 'GET':
-#		products = Vendor_Products.objects.filter(vendor_phone=request.GET['vendor_phone'])
+def send_prev_products(request):
+	if request.method == 'POST':
+		objs = Vendor_Products.objects.filter(vendor_phone=request.POST['vendor_phone'])
+		all_products = list(objs)
+		no_prod = len(all_products)
+		obj_list = []
+		print(all_products)
+		for i in range(no_prod):
+			print(all_products[i].product_id.product_id)
+			obj = CategorizedProducts.objects.get(product_id=all_products[i].product_id.product_id)
+			prod = {
+				'prod_id': obj.product_id,
+				'prod_name': obj.product_name,
+				'category_name': obj.under_category.categoryName,
+				'category_id': obj.under_category.categoryId,
+				'prod_price': obj.product_price,
+				'prod_rating': obj.product_rating,
+				'prod_desc': obj.product_descp,
+				'prod_img': obj.product_imagepath,
+				'check': True
+			}
+			obj_list.append(prod)
+		data = {
+			'no_prod': no_prod,
+			'vendor_phone': request.POST['vendor_phone'],
+			'products': obj_list
+		}
+		return JsonResponse(data)
+
 
 
 
@@ -54,7 +80,8 @@ def send_all_products(request):
 				'prod_price': obj.product_price,
 				'prod_rating': obj.product_rating,
 				'prod_desc': obj.product_descp,
-				'prod_img': obj.product_imagepath
+				'prod_img': obj.product_imagepath,
+				'check': False
 			}
 			obj_list.append(prod)
 		data = {
@@ -68,13 +95,19 @@ def send_all_products(request):
 def save_vendor_products(request):
 	if request.method == 'POST':
 		products = request.POST.getlist('products')
-		products
+		print(Vendors.objects.get(phone_no=request.POST['vendor_phone']))
+		old_prods = Vendor_Products.objects.filter(vendor_phone=Vendors.objects.get(phone_no=request.POST['vendor_phone']))
+		old_prods.delete()
 		objs = []
 		l = len(products)
 		for product in products:
-			obj = Vendor_Products(product_id = product, vendor_phone = Vendors.objects.get(phone_no=request.POST['vendor_phone']))
+			obj = Vendor_Products(product_id = CategorizedProducts.objects.get(product_id=product), vendor_phone=Vendors.objects.get(phone_no=request.POST['vendor_phone']))
 			objs.append(obj)
 		Vendor_Products.objects.bulk_create(objs, l)
+		response = {
+			'success': 'true'
+		}
+		return JsonResponse(response)
 
 
 def activate(request):
