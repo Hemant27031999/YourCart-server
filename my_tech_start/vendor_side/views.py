@@ -29,13 +29,18 @@ def check_vendor(request):
 	}
 	return JsonResponse(response)
 
+#def send_prev_products(request):
+#	if request.method == 'GET':
+#		products = Vendor_Products.objects.filter(vendor_phone=request.GET['vendor_phone'])
+
+
 
 def send_all_products(request):
 	if request.method == 'GET':
 		objs = CategorizedProducts.objects.all()
 		all_products = list(objs)
 		no_prod = len(all_products)
-		obj_list = {}
+		obj_list = []
 		for i in range(no_prod):
 			print(all_products[i].product_id)
 			get_id = int(all_products[i].product_id)
@@ -51,7 +56,7 @@ def send_all_products(request):
 				'prod_desc': obj.product_descp,
 				'prod_img': obj.product_imagepath
 			}
-			obj_list[i] = prod
+			obj_list.append(prod)
 		data = {
 			'no_prod': no_prod,
 			'products': obj_list
@@ -63,6 +68,7 @@ def send_all_products(request):
 def save_vendor_products(request):
 	if request.method == 'POST':
 		products = request.POST.getlist('products')
+		products
 		objs = []
 		l = len(products)
 		for product in products:
