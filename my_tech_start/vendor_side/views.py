@@ -53,11 +53,17 @@ def send_prev_products(request):
 			obj_list.append(prod)
 		data = {
 			'no_prod': no_prod,
-			'vendor_phone': request.POST['vendor_phone'],
 			'products': obj_list
 		}
 		return JsonResponse(data)
 
+
+def pusher_authentication(request):
+	auth = pusher.pusher_client.authenticate(
+		channel=request.form['channel_name'],
+		socket_id=request.form['socket_id']
+	)
+	return json.dumps(auth)
 
 
 
