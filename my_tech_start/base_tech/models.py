@@ -144,7 +144,7 @@ class Subscribed_Orders(models.Model):
 
 class Orders(models.Model):
     order_id = models.CharField(primary_key=False, editable=True, default=uuid.uuid4, max_length=500)
-    product_id = models.ForeignKey(CategorizedProducts, on_delete=models.PROTECT)
+    product_name = models.CharField(max_length=500)
     quantity = models.IntegerField(default=1)
     order_date = models.DateField((u"Order date"), auto_now_add=True)
     order_time = models.TimeField((u"Order time"), auto_now_add=True)
@@ -152,6 +152,11 @@ class Orders(models.Model):
     customer_phone = models.ForeignKey(RegUser, to_field='phone_no', on_delete=models.CASCADE)
     vendor_phone = models.CharField(max_length=500, blank=True, null=True)
     delivery_boy_phone = models.ForeignKey(Delivery_Boys, on_delete=models.PROTECT, null=True, blank=True)
+    deliveryBoy_type = (
+        ('P','Primary'),
+        ('S','Secondary')
+    )
+    delboy_type = models.CharField(max_length=50, choices=deliveryBoy_type, default='S')
     ORDER_STATUS = (
         ('D', 'Delivered'),
         ('A', 'Active')

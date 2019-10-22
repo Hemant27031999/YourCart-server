@@ -6,6 +6,7 @@ from django.middleware.csrf import get_token
 from base_tech.forms import *
 from rest_framework.views import APIView
 from .models import *
+from vendor_side.models import *
 from .serializers import *
 from rest_framework.response import Response
 import io
@@ -21,6 +22,8 @@ from django.utils.safestring import mark_safe
 import json
 import requests
 from geographiclib.geodesic import Geodesic
+from copy import deepcopy
+import uuid
 
 class Object:
     def toJSON(self):
@@ -307,13 +310,13 @@ def is_Sublist(l, s):
 	return sub_set
 
 
-def vendor_assignment(vendors,ar1,ar2,vendor_assigned_list,accepted_orders_list):
+def vendor_assignment(vendors,ar1,ar2,vendor_assigned_list,accepted_orders_list,rejected_orders_list):
     print("a",vendors)
     if (len(vendors) == 0):
         print("len_vendors")
         print(ar1)
         print(ar2)
-        return ar1,ar2,vendor_assigned_list,accepted_orders_list
+        return ar1,ar2,vendor_assigned_list,accepted_orders_list,rejected_orders_list
     if len(ar1)==0:
         return ar1,ar2
     n = len(ar1)
@@ -338,7 +341,7 @@ def vendor_assignment(vendors,ar1,ar2,vendor_assigned_list,accepted_orders_list)
              vmax=ven
     print("vendors_max",vmax)
     print("count_max",cmax)
-    accepted_orders = []
+    total_orders = []
     order_quantities = []
     #check whether vendor accepts the order
     #vendor returns list which order he wants to accept
@@ -350,9 +353,17 @@ def vendor_assignment(vendors,ar1,ar2,vendor_assigned_list,accepted_orders_list)
     #accepted_orders=[i for i in ar1 if i in myProducts ]
     for item,quan in zip(ar1,ar2):
         if item in myProducts:
-            accepted_orders.append(item)
+            total_orders.append(item)
             order_quantities.append(quan)
-    print(accepted_orders)
+    print(total_orders)
+    #assuming for now
+    accepted_orders = total_orders
+
+    #rejected orders
+    rejected_orders = []
+    for item in total_orders:
+        if item not in accepted_orders:
+            rejected_orders.append(item)
     post_data = {
         "items" : accepted_orders,
         "quantities" : order_quantities,
@@ -361,6 +372,9 @@ def vendor_assignment(vendors,ar1,ar2,vendor_assigned_list,accepted_orders_list)
 
     vendor_assigned_list.append(vmax)
     accepted_orders_list.append(accepted_orders)
+    rejected_orders_list.append(rejected_orders)
+
+    print("rejected_orders////////",rejected_orders)
     #remaining_orders = [i for i in ar1 + accepted_orders if i not in accepted_orders]
 
 
@@ -385,20 +399,20 @@ def vendor_assignment(vendors,ar1,ar2,vendor_assigned_list,accepted_orders_list)
 
     print("end of v_assign",ar1)
     print(ar2)
-    new1,new2,new_v_a_l,new_a_o_l=vendor_assignment(vendors, ar1, ar2,vendor_assigned_list, accepted_orders_list)
-    return new1,new2,new_v_a_l,new_a_o_l
+    new1,new2,new_v_a_l,new_a_o_l,new_r_o_l=vendor_assignment(vendors, ar1, ar2,vendor_assigned_list, accepted_orders_list, rejected_orders_list)
+    return new1,new2,new_v_a_l,new_a_o_l,new_r_o_l
 
 
 
 
-def cell_sort(cells,product_count,ar1,ar2, user_address,vendor_assigned_list,accepted_orders_list,cell_distance_all,cell_distance):
+def cell_sort(cells,product_count,ar1,ar2, user_latitude,user_longitude,city,vendor_assigned_list,accepted_orders_list,rejected_orders_list,cell_distance_all,cell_distance):
     print("cell_sort_top",cells)
     if len(cells) == 0:
         print("len_cells=0")
-        return ar1,ar2,vendor_assigned_list,accepted_orders_list,cell_distance
+        return ar1,ar2,vendor_assigned_list,accepted_orders_list,rejected_orders_list,cell_distance
     if len(ar1)==0:
         print("len_ar1=0")
-        return ar1,ar2
+        return ar1,ar2,vendor_assigned_list,accepted_orders_list,rejected_orders_list,cell_distance
     n = len(ar1)
 
     for cell in cells:
@@ -422,7 +436,7 @@ def cell_sort(cells,product_count,ar1,ar2, user_address,vendor_assigned_list,acc
     print("count_max",count_max)
     min_distance = 1000
     for cell in cell_max_list:
-        dist = distance(cell.Cell_lat,cell.Cell_long,user_address[0].latitude, user_address[0].longitude)
+        dist = distance(cell.Cell_lat,cell.Cell_long,user_latitude, user_longitude)
         if min_distance > dist:
             min_distance = dist
             closest_cell = cell
@@ -433,9 +447,11 @@ def cell_sort(cells,product_count,ar1,ar2, user_address,vendor_assigned_list,acc
     vendors = list(Vendors.objects.filter(cell = closest_cell))
     valist=[]
     alist = []
-    new_ar1,new_ar2,valist,alist= vendor_assignment(vendors,ar1,ar2,valist,alist)
+    ralist = []
+    new_ar1,new_ar2,valist,alist,ralist= vendor_assignment(vendors,ar1,ar2,valist,alist,ralist)
     vendor_assigned_list.append(valist)
     accepted_orders_list.append(alist)
+    rejected_orders_list.append(ralist)
     # for a,b in zip(va_list,a_list):
     #     vendor_assigned_list,append(a)
     #     accepted_orders_list.append(b)
@@ -465,8 +481,8 @@ def cell_sort(cells,product_count,ar1,ar2, user_address,vendor_assigned_list,acc
     #[cells.index(closest_cell)]
     cell_distance_all.remove(cell_distance_all[cells.index(closest_cell)])
     cells.remove(closest_cell)
-    new1,new2,new_valist,new_alist,cell_distance=cell_sort(cells, product_count , new_ar1,new_ar2, user_address,vendor_assigned_list,accepted_orders_list,cell_distance_all,cell_distance)
-    return new1,new2,new_valist,new_alist,cell_distance
+    new1,new2,new_valist,new_alist,new_ralist,cell_distance=cell_sort(cells, product_count , new_ar1,new_ar2, user_latitude,user_longitude,city,vendor_assigned_list,accepted_orders_list,rejected_orders_list,cell_distance_all,cell_distance)
+    return new1,new2,new_valist,new_alist,new_ralist,cell_distance
 
 def get_bearing(lat1, lat2, long1, long2):
     brng = Geodesic.WGS84.Inverse(lat1, long1, lat2, long2)['azi1']
@@ -482,7 +498,7 @@ def sector_check(lat1,long1,lat2,long2,lat3,long3):
         return angle,1
 
 
-def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_address):
+def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,user_longitude,city,phone_no):
     val_inside = []
     dist_inside = []
     min_u2d = 1000
@@ -490,8 +506,8 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_address):
     final_vendor_cell = []
     # final_aol = []
     final_deliverBoy = []
-    deliveryBoy_list = list(Delivery_Boys.objects.filter(city = user_address[0].city,status="A",busy="False"))
-    # city = user_address[0].city, ))
+    deliveryBoy_list = list(Delivery_Boys.objects.filter(city = city,status="A",busy="False"))
+    # city = city, ))
 
     # , status = 'I',busy = False))
     print("deliveryBoy_list",deliveryBoy_list)
@@ -517,19 +533,53 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_address):
         ##bacha hai
         max_distance =0
         for v1,d1 in zip(val_inside,dist_inside):
-            if(d1>=max):
+            if(d1>=max_distance):
                 farthest_cell = v1
                 max_distance = d1
 
-        min = 1000
-        for boy in deliveryBoy_list:
-            d = distance(boy.lat,boy.long,farthest_cell[0].cell.Cell_lat,farthest_cell[0].cell.Cell_long)
-            if(d < min):
-                min = d
-                primaryBoy = boy
+
+        firstmin = 1000
+        secmin = 1000
+        thirdmin = 1000
+        for i in range(0, len(deliveryBoy_list)):
+
+            if distance(deliveryBoy_list[i].lat,deliveryBoy_list[i].long,farthest_cell[0].cell.Cell_lat,farthest_cell[0].cell.Cell_long) < firstmin:
+                thirdmin = secmin
+                secmin = firstmin
+                firstmin = deliveryBoy_list[i]
+
+            elif distance(deliveryBoy_list[i].lat,deliveryBoy_list[i].long,farthest_cell[0].cell.Cell_lat,farthest_cell[0].cell.Cell_long) < secmin:
+                thirdmin = secmin
+                secmin = deliveryBoy_list[i]
+            elif distance(deliveryBoy_list[i].lat,deliveryBoy_list[i].long,farthest_cell[0].cell.Cell_lat,farthest_cell[0].cell.Cell_long) < thirdmin:
+                thirdmin = deliveryBoy_list[i]
+
+        # min =1000
+        # for boy in deliveryBoy_list:
+        #     d = distance(boy.lat,boy.long,farthest_cell[0].cell.Cell_lat,farthest_cell[0].cell.Cell_long)
+        #     if(d < min):
+        #         min = d
+        #         primaryBoy = boy
+        primaryBoy = firstmin
+        data = {
+            "vendor":val_inside,
+            "checkpoint_lat": checkpoint_lat,
+            "checkpoint_long":checkpoint_long,
+            "user_latitude":user_latitude,
+            "user_longitude":user_longitude,
+            "user_phone":phone_no
+        }
+        #data sent
+        #data received
+        #if confirmed:
+        count_sector = 0
+
+
+
     for vendor_cell,dist in zip(reversed(vendor_assigned_list),reversed(cell_distance)):
         # if vendor_cell in final_vendor_cell:
         #     continue
+        count_sector=count_sector+1
         print("vendor_cell",vendor_cell)
         vendor_assigned_list.remove(vendor_cell)
         cell_distance.remove(dist)
@@ -547,7 +597,7 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_address):
             #     if v1!=vendor_cell:
             print("v1",v1)
             cell = v1[0].cell
-            angle,sign = sector_check(vendor_cell[0].cell.Cell_lat,vendor_cell[0].cell.Cell_long,user_address[0].latitude,user_address[0].longitude,cell.Cell_lat,cell.Cell_long)
+            angle,sign = sector_check(vendor_cell[0].cell.Cell_lat,vendor_cell[0].cell.Cell_long,user_latitude,user_longitude,cell.Cell_lat,cell.Cell_long)
             print("angle",angle)
             print("sign",sign)
             if abs(angle)<30:
@@ -585,6 +635,23 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_address):
                     farthest_cell = v1
         print("vendor_cell_sector",vendor_cell_sector)
 
+
+        # firstmin = 1000
+        # secmin = 1000
+        # thirdmin = 1000
+        # for i in range(0, len(deliveryBoy_list)):
+        #
+        #     if deliveryBoy_list[i] < firstmin:
+        #         thirdmin = secmin
+        #         secmin = firstmin
+        #         firstmin = deliveryBoy_list[i]
+        #
+        #     elif deliveryBoy_list[i] < secmin:
+        #         thirdmin = secmin
+        #         secmin = deliveryBoy_list[i]
+        #     elif deliveryBoy_list[i] < thirdmin:
+        #         thirdmin = deliveryBoy_list[i]
+
         min = 1000
         # initialize closest Boy
         #closestBoy = deliveryBoy_list[0]
@@ -593,6 +660,28 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_address):
             if(d < min):
                 min = d
                 closestBoy = boy
+
+
+        data = {
+            "vendor":vendor_cell_sector.append(vendor_cell),
+            "checkpoint_lat": checkpoint_lat,
+            "checkpoint_long":checkpoint_long,
+            "user_latitude":user_latitude,
+            "user_longitude":user_longitude,
+            "user_phone":phone_no,
+            "split":count_sector>1,
+
+        }
+
+
+        vendor_cell_sector.remove(vendor_cell)
+
+
+
+
+
+
+
         print(closestBoy)
         print("dist+min",dist+min)
         if (dist+min)<min_u2d:
@@ -611,12 +700,12 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_address):
         final_vendor_cell.append(v1)
         final_deliverBoy.append(primaryBoy)
     if val_inside==[]:
-        checkpoint_lat = user_address[0].latitude
-        checkpoint_long = user_address[0].longitude
+        checkpoint_lat = user_latitude
+        checkpoint_long = user_longitude
     print(final_vendor_cell)
     print(final_deliverBoy)
     print("checkpoint: ",checkpoint_lat ," ",checkpoint_long )
-    return
+    return final_vendor_cell,final_deliverBoy,primaryBoy
 
 
 # def getBearings(point1,   point2,point3):
@@ -637,56 +726,56 @@ def place_order(request):
         print(request.POST)
         ar1 = request.POST.getlist('items')
         ar2 = request.POST.getlist('quantities')
-        user = RegUser.objects.filter(phone_no = request.POST['phone_no'])
-        user_address = Addresses.objects.filter(phone_no = user[0])
-
+        city = request.POST['city']
+        user_latitude = float(request.POST['order_lat'])
+        user_longitude = float(request.POST['order_long'])
 
         print(request.POST.getlist('items'))
-        i = 0
-        for a, b in zip(ar1, ar2):
-            if i == 0:
-                obj = Orders.objects.create(
-                    customer_phone=RegUser.objects.get(phone_no=request.POST['phone_no']),
-                    address=request.POST['address'],
-                    product_id=CategorizedProducts.objects.get(product_id=a),
-                    quantity=b,
-                    vendor_phone=request.POST['vendor_phone'],
-                    cust_lat=request.POST['cust_lat'],
-                    cust_long=request.POST['cust_long']
-                )
-                order_id = obj.order_id
-                print(obj.order_time)
-                i = i + 1
-            else:
-                Orders.objects.create(
-                    customer_phone=RegUser.objects.get(phone_no=request.POST['phone_no']),
-                    address=request.POST['address'],
-                    product_id=CategorizedProducts.objects.get(product_id=a),
-                    quantity=b,
-                    order_id=order_id,
-                    vendor_phone=request.POST['vendor_phone'],
-                    cust_lat=request.POST['cust_lat'],
-                    cust_long=request.POST['cust_long']
-                )
-                i = i + 1
-        #      obj.order_id = request.POST['order_id']
-        #      obj.phone_no = RegUser.objects.get(phone_no=request.POST['phone_no'])
-        #      obj.address1 = request.POST['address']
-        #      obj.product_id = a
-        #      obj.quantity = b
-        #      obj.save()
-        response = {'success': 'true'}
+        # i = 0
+        # for a, b in zip(ar1, ar2):
+        #     if i == 0:
+        #         obj = Orders.objects.create(
+        #             customer_phone=RegUser.objects.get(phone_no=request.POST['phone_no']),
+        #             address=request.POST['address'],
+        #             product_id=CategorizedProducts.objects.get(product_id=a),
+        #             quantity=b,
+        #             vendor_phone=request.POST['vendor_phone'],
+        #             cust_lat=request.POST['cust_lat'],
+        #             cust_long=request.POST['cust_long']
+        #         )
+        #         order_id = obj.order_id
+        #         print(obj.order_time)
+        #         i = i + 1
+        #     else:
+        #         Orders.objects.create(
+        #             customer_phone=RegUser.objects.get(phone_no=request.POST['phone_no']),
+        #             address=request.POST['address'],
+        #             product_id=CategorizedProducts.objects.get(product_id=a),
+        #             quantity=b,
+        #             order_id=order_id,
+        #             vendor_phone=request.POST['vendor_phone'],
+        #             cust_lat=request.POST['cust_lat'],
+        #             cust_long=request.POST['cust_long']
+        #         )
+        #         i = i + 1
+        # #      obj.order_id = request.POST['order_id']
+        # #      obj.phone_no = RegUser.objects.get(phone_no=request.POST['phone_no'])
+        # #      obj.address1 = request.POST['address']
+        # #      obj.product_id = a
+        # #      obj.quantity = b
+        # #      obj.save()
+        # response = {'success': 'true'}
 
 
         i=0
-        #cells = list(Cells.objects.filter(city = user_address[0].city))
-        cells_all = list((Cells.objects.filter(city = user_address[0].city)))
+        #cells = list(Cells.objects.filter(city = city))
+        cells_all = list((Cells.objects.filter(city = city)))
         cells = []
-        print("cells_all",cells_all[1].Cell_lat," ",cells_all[1].Cell_long)
+        #print("cells_all",cells_all[1].Cell_lat," ",cells_all[1].Cell_long)
         cell_distance_all = []
         cell_distance = []
         for cell in cells_all:
-            d = (distance(user_address[0].latitude,user_address[0].longitude , cell.Cell_lat, cell.Cell_long))
+            d = (distance(user_latitude,user_longitude , cell.Cell_lat, cell.Cell_long))
             if d<7:
                 cells.append(cell)
                 cell_distance_all.append(d)
@@ -694,15 +783,19 @@ def place_order(request):
         product_count = []
         vendor_assigned_list=[]
         accepted_orders_list=[]
-        ar1_rem,ar2_rem,vendor_assigned_list,accepted_orders_list,cell_distance = cell_sort(cells,product_count,ar1,ar2, user_address,vendor_assigned_list,accepted_orders_list,cell_distance_all,cell_distance)
+        rejected_orders_list=[]
+        ar1_rem,ar2_rem,vendor_assigned_list,accepted_orders_list,rejected_orders_list,cell_distance = cell_sort(cells,product_count,ar1,ar2, user_latitude,user_longitude,city,vendor_assigned_list,accepted_orders_list,rejected_orders_list,cell_distance_all,cell_distance)
         print(vendor_assigned_list)
         print(accepted_orders_list)
+        print(rejected_orders_list)
         print(cell_distance)
-        delivery_boy_assignment(vendor_assigned_list,cell_distance,user_address)
+
+        final_vendor_cell,final_deliverBoy,primaryBoy=delivery_boy_assignment(deepcopy(vendor_assigned_list),deepcopy(cell_distance),user_latitude,user_longitude,city,request.POST['phone_no'])
+
             # products = get_products_cell(cell.Cell_id)
             # if is_Sublist(products,ar1):
             #     flag = 1
-            #     dist = distance(cell.Cell_lat,cell.Cell_long,user_address.latitude, user_address.longitude)
+            #     dist = distance(cell.Cell_lat,cell.Cell_long,user_latitude,user_longitude,city.latitude, user_latitude,user_longitude,city.longitude)
             #     if min_distance > dist:
             #         min_distance = dist
             #         closest_cell = cell.Cell_id
@@ -721,23 +814,91 @@ def place_order(request):
         #         if is_Sublist(products,ar1):
         #             closest_vendor = vendor
         #             break
+        ar1 = request.POST.getlist('items')
+        ar2 = request.POST.getlist('quantities')
+        print(ar1)
+        i=0
         if ar1_rem==[]:
-            # print('fir se shiiiiiiiiiiiii')
-            for a,b in zip(ar1,ar2):
-                if i==0:
-                    obj = Orders.objects.create(phone_no = RegUser.objects.get(phone_no=request.POST['phone_no']), address = request.POST['address'], product_id = a, quantity = b)
-                    order_id = obj.order_id
-                    i=i+1
-                else:
-                    Orders.objects.create(phone_no = RegUser.objects.get(phone_no=request.POST['phone_no']), address = request.POST['address'], product_id = a, quantity = b, order_id= order_id)
-                    i=i+1
+        #     print('fir se shiiiiiiiiiiiii')
+        #     order_id = "start"
+        #     for a,b in zip(ar1,ar2):
+        #         if i==0:
+        #             print("dddddddddddddddddddddddddd")
+        #             obj = Orders.objects.get_or_create(phone_no = RegUser.objects.get(phone_no=request.POST['phone_no']), address = request.POST['address'], product_name = a, quantity = b)
+        #             obj.save()
+        #             print(obj)
+        #             print("dddddddddddddddddddddddddd")
+        #             order_id = obj.order_id
+        #             i=i+1
+        #         else:
+        #             Orders.objects.get_or_create(phone_no = RegUser.objects.get(phone_no=request.POST['phone_no']), address = request.POST['address'], product_name = a, quantity = b, order_id= order_id)
+        #             obj.save()
+        #             i=i+1
+
+            # for a, b in zip(ar1, ar2):
+            #     if i == 0:
+            #         obj = Orders.objects.create(
+            #             customer_phone=RegUser.objects.get(phone_no=request.POST['phone_no']),
+            #             address=request.POST['address'],
+            #             product_name=a,
+            #             quantity=b,
+            #             #vendor_phone=request.POST['vendor_phone'],
+            #             cust_lat=user_latitude,
+            #             cust_long=user_longitude
+            #         )
+            #         order_id = obj.order_id
+            #         #print(obj.order_time)
+            #         i = i + 1
+            #     else:
+            #         Orders.objects.create(
+            #             customer_phone=RegUser.objects.get(phone_no=request.POST['phone_no']),
+            #             address=request.POST['address'],
+            #             product_name=a,
+            #             quantity=b,
+            #             order_id=order_id,
+            #             #vendor_phone=request.POST['vendor_phone'],
+            #             cust_lat=user_latitude,
+            #             cust_long=user_longitude
+            #         )
+            #         i = i + 1
           #      obj.order_id = request.POST['order_id']
           #      obj.phone_no = RegUser.objects.get(phone_no=request.POST['phone_no'])
           #      obj.address1 = request.POST['address']
           #      obj.product_id = a
           #      obj.quantity = b
           #      obj.save()
-            response = {'success': 'true'}
+            order_id = uuid.uuid4()
+            print(order_id)
+            for cell,cell_accepted_order,cell_rejected_order in zip(vendor_assigned_list,accepted_orders_list,rejected_orders_list):
+                for ven,ven_accepted_order,ven_rejected_order in zip(cell,cell_accepted_order,cell_rejected_order):
+                    for ven_order in ven_accepted_order:
+                        delivery_boy_phone = final_deliverBoy[final_vendor_cell.index(cell)]
+                        if delivery_boy_phone==primaryBoy:
+                            value = "P"
+                        else:
+                            value = "S"
+                        Orders.objects.create(
+                            customer_phone=RegUser.objects.get(phone_no=request.POST['phone_no']),
+                            address=request.POST['address'],
+                            product_name=ven_order,
+                            quantity=ar2[ar1.index(ven_order)],
+                            order_id=order_id,
+                            delivery_boy_phone = final_deliverBoy[final_vendor_cell.index(cell)],
+                            delboy_type = value,
+                            vendor_phone=ven.phone_no,
+                            cust_lat=user_latitude,
+                            cust_long=user_longitude
+                        )
+
+                        prev_orders.objects.create(order_id = order_id, vendor_phone = ven.phone_no ,product_name = ven_order, status = "A")
+                    for ven_order in ven_rejected_order:
+                        prev_orders.objects.create(order_id = order_id, vendor_phone = ven.phone_no ,product_name = ven_order, status = "R")
+
+            response = {
+                'success': 'true',
+                'primaryBoy_name':primaryBoy.name,
+                'primaryBoy_phone':primaryBoy.phone_no
+            }
 
             return JsonResponse(response)
         else:

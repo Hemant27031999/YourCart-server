@@ -56,5 +56,19 @@ def activate(request):
 		return JsonResponse(response)
 	response = {
 		'error' : 'Invalid'
-	}	
+	}
 	return JsonResponse(response)
+
+def order_history(request):
+	if request.method == 'POST':
+		details = []
+		order_details = list(prev_orders.objects.filter(order_id = request.POST['order_id'], vendor_phone = request.POST['vendor_phone']))
+		for order_detail in order_details:
+			d={}
+			d["product_name"] = order_detail.product_name
+			d["status"] = order_detail.status
+			details.append(d)
+
+		dict = {"detail" : details }
+
+		return JsonResponse(dict,safe = False)
