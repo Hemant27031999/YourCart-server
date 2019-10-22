@@ -9,6 +9,28 @@ pusher = Pusher(app_id=u'884349', key=u'7c495f369f4053064877', secret=u'1f0f6089
 # Create your views here.
 
 
+def check_delivery_boy(request):
+    if request.method == 'POST':
+        try:
+            obj = Delivery_Boys.objects.get(del_boy_id=request.POST['del_boy_id'])
+            response = {
+                'del_boy_phone': obj.phone_no,
+                'del_boy_id': request.POST['del_boy_id'],
+                'found': 'true'
+            }
+        except:
+            response = {
+                'del_boy_phone': '',
+                'del_boy_id': request.POST['del_boy_id'],
+                'found': 'false'
+            }
+        return JsonResponse(response)
+    response = {
+        'error': 'Invalid'
+    }
+    return JsonResponse(response)
+
+
 def order_confirm(request):
     if request.method == 'POST':
         if request.POST['accepted'] == 'true':
