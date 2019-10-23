@@ -17,7 +17,6 @@ def check_vendor(request):
 				'vendor_id': request.POST['vendor_id'],
 				'found': 'true'
 			}
-
 		except:
 			response = {
 				'vendor_phone': '',
@@ -60,8 +59,9 @@ def send_prev_products(request):
 
 
 def pusher_authentication(request):
+	print(request.headers['vendor-phone'])
 	auth = pusher.authenticate(
-		channel="private-"+request.POST['vendor_phone'],
+		channel="private-"+request.headers['vendor-phone'],
 		socket_id='1234.1234'
 	)
 	return JsonResponse(auth)
