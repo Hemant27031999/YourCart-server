@@ -283,6 +283,34 @@ def get_products_cell(cell):
     return list(myProducts)
 
 
+def get_order_history(request):
+    objs = Orders.objects.filter(customer_phone=RegUser.objects.get(phone_no=request.POST['cust_phone']))
+    cust_orders = list(objs)
+    no_orders = len(cust_orders)
+    obj_list = []
+    print(cust_orders)
+    for i in range(no_orders):
+        print(cust_orders[i].product_id.product_id)
+        obj = CategorizedProducts.objects.get(product_id=cust_orders[i].product_id.product_id)
+        prod = {
+            'prod_id': obj.product_id,
+            'prod_name': obj.product_name,
+            'category_name': obj.under_category.categoryName,
+            'category_id': obj.under_category.categoryId,
+            'prod_price': obj.product_price,
+            'prod_rating': obj.product_rating,
+            'prod_desc': obj.product_descp,
+            'prod_img': obj.product_imagepath,
+            'check': False
+        }
+        obj_list.append(prod)
+    data = {
+        'no_prod': no_orders,
+        'products': obj_list
+    }
+    return JsonResponse(data)
+
+
 def is_Sublist(l, s):
 	sub_set = False
 	if s == []:

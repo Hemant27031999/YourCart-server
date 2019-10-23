@@ -3,7 +3,7 @@ from django.utils import timezone
 import uuid
 import json
 
-# Create your models here.
+
 class RegUser(models.Model):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
@@ -69,7 +69,7 @@ class Cells(models.Model):
 
 class Vendors(models.Model):
     phone_no = models.CharField(primary_key=True, max_length=255)
-    vendor_id = models.CharField(max_length=100)
+    vendor_id = models.CharField(unique=True, max_length=100)
     vendor_lat = models.FloatField()
     vendor_long = models.FloatField()
     city = models.CharField(unique=False, max_length=255)
@@ -144,7 +144,7 @@ class Subscribed_Orders(models.Model):
 
 class Orders(models.Model):
     order_id = models.CharField(primary_key=False, editable=True, default=uuid.uuid4, max_length=500)
-    product_name = models.CharField(max_length=500)
+    product_id = models.ForeignKey(CategorizedProducts, on_delete=models.PROTECT)
     quantity = models.IntegerField(default=1)
     order_date = models.DateField((u"Order date"), auto_now_add=True)
     order_time = models.TimeField((u"Order time"), auto_now_add=True)
