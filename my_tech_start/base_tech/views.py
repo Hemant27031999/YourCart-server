@@ -284,6 +284,8 @@ def get_products_cell(cell):
 
 
 def get_order_history(request):
+    print(request.POST['cust_phone'])
+    print(RegUser.objects.get(phone_no=request.POST['cust_phone']))
     objs = Orders.objects.filter(customer_phone=RegUser.objects.get(phone_no=request.POST['cust_phone']))
     cust_orders = list(objs)
     no_orders = len(cust_orders)

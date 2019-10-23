@@ -36,6 +36,7 @@ urlpatterns = [
     path('subscribe_order/', views.subscribe_order, name='subscribe_order'),
     path('getaccess/', views.getaccess, name='getaccess'),
     path('login/', views.loginuser, name='loginuser'),
+    path('cust_orders/', views.get_order_history, name='orderhistory'),
     path('paytm/', include('paytm.urls')),
     path('image_upload/', views.hotel_image_view, name = 'image_upload'),
     path('success', views.success, name = 'success'),
