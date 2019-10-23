@@ -124,7 +124,7 @@ def save_vendor_products(request):
 		objs = []
 		l = len(products)
 		for product in products:
-			obj = Vendor_Products(product_id = CategorizedProducts.objects.get(product_id=product), vendor_phone=Vendors.objects.get(phone_no=request.POST['vendor_phone']))
+			obj = Vendor_Products(product_id = product, vendor_phone=Vendors.objects.get(phone_no=request.POST['vendor_phone']))
 			objs.append(obj)
 		Vendor_Products.objects.bulk_create(objs, l)
 		response = {
@@ -219,18 +219,18 @@ def pusher_check(request):
 	#}
 	#pusher.trigger('my-channel', 'my-event', data)
 	#return JsonResponse(data)
-	send_order('098', '0987', '09876')
+	send_vendor_order('098', '0987', '09876')
+	return JsonResponse({'abc':'abc'})
 
 
-def send_order(order_id, items, quantities):
+def send_vendor_order(vendor_phone, items, quantities):
 	data = {
-		'vendor_phone': '987654',
-		'order_id': order_id,
+		'vendor_phone': vendor_phone,
 		'items': items,
 		'quantities': quantities
 	}
 	print(data)
-	pusher.trigger('private-98765', 'my-event', data)
+	pusher.trigger('my-channel', 'my-event', data)
 
 
 def order_prepared(request):

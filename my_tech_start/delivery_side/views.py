@@ -63,6 +63,15 @@ def unique(list1):
     # print list
     return unique_list
 
+def send_delivery_order(vendor_phone, del_boy_phone, primary):
+    data = {
+        'vendor_phone': vendor_phone,
+        'del_boy_phone': del_boy_phone,
+        'is_primary': primary
+    }
+    print(data)
+    pusher.trigger('my-channel' , 'my-event', data)
+
 def vendor_details(request):
     if request.method == 'POST':
         order_id = request.POST['order_id']
