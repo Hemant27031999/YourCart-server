@@ -282,8 +282,6 @@ def get_products_cell(cell):
 
 
 def get_order_history(request):
-    print(request.POST['cust_phone'])
-    print(RegUser.objects.get(phone_no=request.POST['cust_phone']))
     objs = Orders.objects.filter(customer_phone=RegUser.objects.get(phone_no=request.POST['cust_phone']))
     cust_orders = list(objs)
     no_orders = len(cust_orders)
@@ -582,14 +580,20 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,use
         #     if(d < min):
         #         min = d
         #         primaryBoy = boy
+        val_name=[]
+        for ven_l in val_inside:
+            for ven in ven_l:
+                val_name.append(ven.phone_no)
         primaryBoy = firstmin
         data = {
-            "vendor":val_inside,
+            "vendor":val_name,
             "checkpoint_lat": checkpoint_lat,
             "checkpoint_long":checkpoint_long,
             "user_latitude":user_latitude,
             "user_longitude":user_longitude,
-            "user_phone":phone_no
+            "user_phone":phone_no,
+            "split":False,
+            "isprimary":True
         }
         #data sent
         #data received
@@ -684,16 +688,6 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,use
                 closestBoy = boy
 
 
-        data = {
-            "vendor":vendor_cell_sector.append(vendor_cell),
-            "checkpoint_lat": checkpoint_lat,
-            "checkpoint_long":checkpoint_long,
-            "user_latitude":user_latitude,
-            "user_longitude":user_longitude,
-            "user_phone":phone_no,
-            "split":count_sector>1,
-
-        }
 
 
         vendor_cell_sector.remove(vendor_cell)
@@ -726,6 +720,31 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,use
         checkpoint_long = user_longitude
     print(final_vendor_cell)
     print(final_deliverBoy)
+    unique_deliver_boy = unique(final_deliverBoy)
+    for boy in unique_deliver_boy:
+        indices = [i for i, x in enumerate(final_deliverBoy) if x == boy]
+        vendor_list = []
+        for index in indices:
+            for ven in final_vendor_cell[index]:
+                vendor_list.append(ven.phone_no)
+        if boy==primaryBoy:
+            isprimary = True
+        else:
+            isprimary = False
+        data = {
+            "vendor":vendor_list,
+            "checkpoint_lat": checkpoint_lat,
+            "checkpoint_long":checkpoint_long,
+            "user_latitude":user_latitude,
+            "user_longitude":user_longitude,
+            "user_phone":phone_no,
+            "split":count_sector>1,
+            "isprimary":isprimary
+        }
+        print("data",data)
+
+
+
     print("checkpoint: ",checkpoint_lat ," ",checkpoint_long )
     return final_vendor_cell,final_deliverBoy,primaryBoy
 
