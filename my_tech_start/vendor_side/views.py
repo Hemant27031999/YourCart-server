@@ -179,9 +179,10 @@ def order_history(request):
 		for order_id in order_ids:
 			d={}
 			d["order_id"] = order_id
+			items = []
 			products = list(prev_orders.objects.filter(vendor_phone = request.POST['vendor_phone'],order_status = "D",order_id = order_id))
 			for product in products:
-				obj = CategorizedProducts.objects.filter(product_name=product.product_name)
+				obj = CategorizedProducts.objects.filter(product_id=product.product_id)
 				print("obj",obj)
 				if product.status == "A":
 					check = True
@@ -198,9 +199,10 @@ def order_history(request):
 					'prod_img': obj[0].product_imagepath,
 					'check': check
 				}
-				d["items"] = prod
-				print(myorders)
-				myorders.append(d)
+				items.append(prod)
+			d["items"] = items
+			print(myorders)
+			myorders.append(d)
 
 
 		dict = {

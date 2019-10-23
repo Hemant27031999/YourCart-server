@@ -276,9 +276,7 @@ def get_products_cell(cell):
     for vendor in vendor_list:
         products = Vendor_Products.objects.filter(vendor_phone = vendor)
         for product in products:
-            obj = CategorizedProducts.objects.filter(product_id = product.product_id)
-
-            myProducts.add(obj[0].product_name)
+            myProducts.add(product.product_id)
             #myProducts.add(list1)
     return list(myProducts)
 
@@ -348,8 +346,7 @@ def vendor_assignment(vendors,ar1,ar2,vendor_assigned_list,accepted_orders_list,
         products_vendor = Vendor_Products.objects.filter(vendor_phone = vendor)
         myProducts=[]
         for product in products_vendor:
-            obj = CategorizedProducts.objects.filter(product_id = product.product_id)
-            myProducts.append(obj[0].product_name)
+            myProducts.append(product.product_id)
         m = len([value for value in ar1 if value in myProducts])
         product_count.append(m)
     print(product_count)
@@ -371,8 +368,7 @@ def vendor_assignment(vendors,ar1,ar2,vendor_assigned_list,accepted_orders_list,
     products_selected_vendor = list(Vendor_Products.objects.filter(vendor_phone = vmax))
     myProducts=[]
     for product in products_selected_vendor:
-        obj = CategorizedProducts.objects.filter(product_id = product.product_id)
-        myProducts.append(obj[0].product_name)
+        myProducts.append(product.product_id)
     #accepted_orders=[i for i in ar1 if i in myProducts ]
     for item,quan in zip(ar1,ar2):
         if item in myProducts:
@@ -901,10 +897,11 @@ def place_order(request):
                             value = "P"
                         else:
                             value = "S"
+                        obj = CategorizedProducts.objects.filter(product_id = ven_order)
                         Orders.objects.create(
                             customer_phone=RegUser.objects.get(phone_no=request.POST['phone_no']),
                             address=request.POST['address'],
-                            product_name=ven_order,
+                            product_id=obj[0],
                             quantity=ar2[ar1.index(ven_order)],
                             order_id=order_id,
                             delivery_boy_phone = final_deliverBoy[final_vendor_cell.index(cell)],
@@ -914,9 +911,9 @@ def place_order(request):
                             cust_long=user_longitude
                         )
 
-                        prev_orders.objects.create(order_id = order_id, vendor_phone = ven.phone_no ,product_name = ven_order, status = "A")
+                        prev_orders.objects.create(order_id = order_id, vendor_phone = ven.phone_no ,product_id = obj[0], status = "A")
                     for ven_order in ven_rejected_order:
-                        prev_orders.objects.create(order_id = order_id, vendor_phone = ven.phone_no ,product_name = ven_order, status = "R")
+                        prev_orders.objects.create(order_id = order_id, vendor_phone = ven.phone_no ,product_id = obj[0], status = "R")
 
             response = {
                 'success': 'true',
