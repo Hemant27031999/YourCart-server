@@ -15,8 +15,6 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 import itertools
 #from background_task import background
-from vendor_side.views import *
-from delivery_side.views import *
 from django.utils import timezone
 import datetime
 import requests
@@ -278,12 +276,16 @@ def get_products_cell(cell):
     for vendor in vendor_list:
         products = Vendor_Products.objects.filter(vendor_phone = vendor)
         for product in products:
-            myProducts.add(product.product_id)
+            obj = CategorizedProducts.objects.filter(product_id = product.product_id)
+
+            myProducts.add(obj[0].product_name)
             #myProducts.add(list1)
     return list(myProducts)
 
 
 def get_order_history(request):
+    print(request.POST['cust_phone'])
+    print(RegUser.objects.get(phone_no=request.POST['cust_phone']))
     objs = Orders.objects.filter(customer_phone=RegUser.objects.get(phone_no=request.POST['cust_phone']))
     cust_orders = list(objs)
     no_orders = len(cust_orders)
@@ -348,7 +350,8 @@ def vendor_assignment(vendors,ar1,ar2,vendor_assigned_list,accepted_orders_list,
         products_vendor = Vendor_Products.objects.filter(vendor_phone = vendor)
         myProducts=[]
         for product in products_vendor:
-            myProducts.append(product.product_id)
+            obj = CategorizedProducts.objects.filter(product_id = product.product_id)
+            myProducts.append(obj[0].product_name)
         m = len([value for value in ar1 if value in myProducts])
         product_count.append(m)
     print(product_count)
@@ -370,14 +373,14 @@ def vendor_assignment(vendors,ar1,ar2,vendor_assigned_list,accepted_orders_list,
     products_selected_vendor = list(Vendor_Products.objects.filter(vendor_phone = vmax))
     myProducts=[]
     for product in products_selected_vendor:
-        myProducts.append(product.product_id)
+        obj = CategorizedProducts.objects.filter(product_id = product.product_id)
+        myProducts.append(obj[0].product_name)
     #accepted_orders=[i for i in ar1 if i in myProducts ]
     for item,quan in zip(ar1,ar2):
         if item in myProducts:
             total_orders.append(item)
             order_quantities.append(quan)
     print(total_orders)
-    send_vendor_order(vmax.phone_no, total_orders, order_quantities)
     #assuming for now
     accepted_orders = total_orders
 
@@ -583,23 +586,14 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,use
         #     if(d < min):
         #         min = d
         #         primaryBoy = boy
-        val_name=[]
-        val_address= []
-        for ven_l in val_inside:
-            for ven in ven_l:
-                val_name.append(ven.name)
-                val_address.append(ven.address)
         primaryBoy = firstmin
         data = {
-            "vendor_name":val_name,
-            "vendor_address":val_address,
+            "vendor":val_inside,
             "checkpoint_lat": checkpoint_lat,
             "checkpoint_long":checkpoint_long,
             "user_latitude":user_latitude,
             "user_longitude":user_longitude,
-            "user_phone":phone_no,
-            "split":False,
-            "isprimary":True
+            "user_phone":phone_no
         }
         #data sent
         #data received
@@ -694,6 +688,16 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,use
                 closestBoy = boy
 
 
+        data = {
+            "vendor":vendor_cell_sector.append(vendor_cell),
+            "checkpoint_lat": checkpoint_lat,
+            "checkpoint_long":checkpoint_long,
+            "user_latitude":user_latitude,
+            "user_longitude":user_longitude,
+            "user_phone":phone_no,
+            "split":count_sector>1,
+
+        }
 
 
         vendor_cell_sector.remove(vendor_cell)
@@ -726,35 +730,6 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,use
         checkpoint_long = user_longitude
     print(final_vendor_cell)
     print(final_deliverBoy)
-    unique_deliver_boy = unique(final_deliverBoy)
-    for boy in unique_deliver_boy:
-        indices = [i for i, x in enumerate(final_deliverBoy) if x == boy]
-        vendor_list = []
-        vendor_address = []
-        for index in indices:
-            for ven in final_vendor_cell[index]:
-                vendor_list.append(ven.name)
-                vendor_address.append(ven.address)
-        if boy==primaryBoy:
-            isprimary = True
-        else:
-            isprimary = False
-        data = {
-            "vendor_name":vendor_list,
-            "vendor_address":vendor_address,
-            "checkpoint_lat": checkpoint_lat,
-            "checkpoint_long":checkpoint_long,
-            "user_latitude":user_latitude,
-            "user_longitude":user_longitude,
-            "user_phone":phone_no,
-            "split":count_sector>1,
-            "isprimary":isprimary
-        }
-        send_delivery_order(vendor_list, boy.phone_no, isprimary)
-        print("data",data)
-
-
-
     print("checkpoint: ",checkpoint_lat ," ",checkpoint_long )
     return final_vendor_cell,final_deliverBoy,primaryBoy
 
@@ -928,11 +903,10 @@ def place_order(request):
                             value = "P"
                         else:
                             value = "S"
-                        obj = CategorizedProducts.objects.filter(product_id = ven_order)
                         Orders.objects.create(
                             customer_phone=RegUser.objects.get(phone_no=request.POST['phone_no']),
                             address=request.POST['address'],
-                            product_id=obj[0],
+                            product_name=ven_order,
                             quantity=ar2[ar1.index(ven_order)],
                             order_id=order_id,
                             delivery_boy_phone = final_deliverBoy[final_vendor_cell.index(cell)],
@@ -942,9 +916,9 @@ def place_order(request):
                             cust_long=user_longitude
                         )
 
-                        prev_orders.objects.create(order_id = order_id, vendor_phone = ven.phone_no ,product_id = obj[0], status = "A")
+                        prev_orders.objects.create(order_id = order_id, vendor_phone = ven.phone_no ,product_name = ven_order, status = "A")
                     for ven_order in ven_rejected_order:
-                        prev_orders.objects.create(order_id = order_id, vendor_phone = ven.phone_no ,product_id = obj[0], status = "R")
+                        prev_orders.objects.create(order_id = order_id, vendor_phone = ven.phone_no ,product_name = ven_order, status = "R")
 
             response = {
                 'success': 'true',
