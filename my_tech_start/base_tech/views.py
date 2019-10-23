@@ -581,12 +581,15 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,use
         #         min = d
         #         primaryBoy = boy
         val_name=[]
+        val_address= []
         for ven_l in val_inside:
             for ven in ven_l:
-                val_name.append(ven.phone_no)
+                val_name.append(ven.name)
+                val_address.append(ven.address)
         primaryBoy = firstmin
         data = {
-            "vendor":val_name,
+            "vendor_name":val_name,
+            "vendor_address":val_address,
             "checkpoint_lat": checkpoint_lat,
             "checkpoint_long":checkpoint_long,
             "user_latitude":user_latitude,
@@ -724,15 +727,18 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,use
     for boy in unique_deliver_boy:
         indices = [i for i, x in enumerate(final_deliverBoy) if x == boy]
         vendor_list = []
+        vendor_address = []
         for index in indices:
             for ven in final_vendor_cell[index]:
-                vendor_list.append(ven.phone_no)
+                vendor_list.append(ven.name)
+                vendor_address.append(ven.address)
         if boy==primaryBoy:
             isprimary = True
         else:
             isprimary = False
         data = {
-            "vendor":vendor_list,
+            "vendor_name":vendor_list,
+            "vendor_address":vendor_address,
             "checkpoint_lat": checkpoint_lat,
             "checkpoint_long":checkpoint_long,
             "user_latitude":user_latitude,

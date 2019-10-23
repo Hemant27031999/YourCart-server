@@ -68,10 +68,12 @@ class Cells(models.Model):
     city = models.CharField(unique=False, max_length=255, default = "Roorkee")
 
 class Vendors(models.Model):
+    name = models.CharField(max_length=255,default = "Hemil")
     phone_no = models.CharField(primary_key=True, max_length=255)
     vendor_id = models.CharField(unique=True, max_length=100)
     vendor_lat = models.FloatField()
     vendor_long = models.FloatField()
+    address = models.CharField(max_length=500,default = "Roorkee")
     city = models.CharField(unique=False, max_length=255)
     cell = models.ForeignKey(Cells, on_delete =models.CASCADE)
     STATUS = [
@@ -86,6 +88,7 @@ class Vendors(models.Model):
     total_no_orders = models.IntegerField(default=0)
     current_no_orders = models.IntegerField(default=0)
     busy = models.CharField(max_length=20, blank=True, null=True)
+
 
 class Serving_Vendors(models.Model):
     phone_no = models.ForeignKey(Vendors, to_field="phone_no", on_delete=models.CASCADE)
@@ -156,7 +159,7 @@ class Orders(models.Model):
         ('P','Primary'),
         ('S','Secondary')
     )
-    delboy_type = models.CharField(max_length=50, choices=deliveryBoy_type, default='S', null=True, blank=True)
+    delboy_type = models.CharField(max_length=50, choices=deliveryBoy_type, default='S')
     ORDER_STATUS = (
         ('D', 'Delivered'),
         ('A', 'Active')
