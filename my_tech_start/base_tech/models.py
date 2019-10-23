@@ -156,7 +156,7 @@ class Orders(models.Model):
         ('P','Primary'),
         ('S','Secondary')
     )
-    delboy_type = models.CharField(max_length=50, choices=deliveryBoy_type, default='S')
+    delboy_type = models.CharField(max_length=50, choices=deliveryBoy_type, default='S', null=True, blank=True)
     ORDER_STATUS = (
         ('D', 'Delivered'),
         ('A', 'Active')
