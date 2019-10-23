@@ -150,18 +150,63 @@ def activate(request):
 	}
 	return JsonResponse(response)
 
+def unique(list1):
+    # intilize a null list
+    unique_list = []
+
+    # traverse for all elements
+    for x in list1:
+        # check if exists in unique_list or not
+        if x not in unique_list:
+            unique_list.append(x)
+    # print list
+    return unique_list
+
 
 def order_history(request):
 	if request.method == 'POST':
 		details = []
-		order_details = list(prev_orders.objects.filter(order_id = request.POST['order_id'], vendor_phone = request.POST['vendor_phone']))
+		print(request.POST.get('vendor_phone'))
+		order_details = list(prev_orders.objects.filter(vendor_phone = request.POST.get('vendor_phone'),order_status = "D"))
+		print("order_details",order_details)
+		order_ids = []
 		for order_detail in order_details:
+			order_ids.append(order_detail.order_id)
+		order_ids = unique(order_ids)
+		print("order_ids",order_ids)
+		no_order = len(order_ids)
+		myorders = []
+		for order_id in order_ids:
 			d={}
-			d["product_name"] = order_detail.product_name
-			d["status"] = order_detail.status
-			details.append(d)
+			d["order_id"] = order_id
+			products = list(prev_orders.objects.filter(vendor_phone = request.POST['vendor_phone'],order_status = "D",order_id = order_id))
+			for product in products:
+				obj = CategorizedProducts.objects.filter(product_name=product.product_name)
+				print("obj",obj)
+				if product.status == "A":
+					check = True
+				else:
+					check = False
+				prod = {
+					'prod_id': obj[0].product_id,
+					'prod_name': obj[0].product_name,
+					'category_name': obj[0].under_category.categoryName,
+					'category_id': obj[0].under_category.categoryId,
+					'prod_price': obj[0].product_price,
+					'prod_rating': obj[0].product_rating,
+					'prod_desc': obj[0].product_descp,
+					'prod_img': obj[0].product_imagepath,
+					'check': check
+				}
+				d["items"] = prod
+				print(myorders)
+				myorders.append(d)
 
-		dict = {"detail" : details }
+
+		dict = {
+			"no_order" : no_order ,
+			"orders" : myorders
+		}
 
 		return JsonResponse(dict,safe = False)
 

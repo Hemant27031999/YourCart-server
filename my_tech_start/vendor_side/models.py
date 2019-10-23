@@ -10,3 +10,8 @@ class prev_orders(models.Model):
         ('R', 'Rejected'),
     ]
     status = models.CharField(max_length=20, choices=STATUS,default='A')
+    ORDER_STATUS = (
+        ('D', 'Delivered'),
+        ('A', 'Active')
+    )
+    order_status = models.CharField(max_length=50, choices=ORDER_STATUS, default='A')
