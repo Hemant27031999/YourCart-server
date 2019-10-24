@@ -777,6 +777,13 @@ def place_order(request):
         body_unicode = request.body.decode('utf-8')
         body = json.loads(body_unicode)
 
+        response = {
+            'success': 'true',
+            'primaryBoy_name':'Kunal',
+            'primaryBoy_phone':'9810445129'
+        }
+        return JsonResponse(response)
+
         print(request.POST)
         items = body['items']
         city = body['city']
