@@ -773,12 +773,14 @@ def place_order(request):
         #  order = Orders()
         #  order.item = request.POST['item']
         #  order.quantity = request.POST['quantity']
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
 
         print(request.POST)
-        items = request.POST.getlist('items')
-        city = request.POST['city']
-        user_latitude = float(request.POST['order_lat'])
-        user_longitude = float(request.POST['order_long'])
+        items = body['items']
+        city = body['city']
+        user_latitude = float(body['order_lat'])
+        user_longitude = float(body['order_long'])
 
     #    response = Delivery_Boys.objects.all()
     #    list1 = list(response)
@@ -792,10 +794,12 @@ def place_order(request):
 
         ar1 =[]
         ar2=[]
-        print(request.POST.getlist('items'))
+      #  print(request.POST.getlist('items'))
         for item in items:
             ar1.append(item['productid'])
             ar2.append(item['itemcount'])
+        print(ar1)
+        print(ar2)
         # i = 0
         # for a, b in zip(ar1, ar2):
         #     if i == 0:
@@ -1120,6 +1124,7 @@ def get_products(request):
         mlong = float(request.POST['longitude'])
         mlat = float(request.POST['latitude'])
         mcity = request.POST['city']
+        print(mcity)
 
 
         vendors = Vendors.objects.filter(city=mcity)
