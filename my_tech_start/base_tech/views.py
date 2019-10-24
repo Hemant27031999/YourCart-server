@@ -543,6 +543,7 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,use
                 checkpoint_lat = val[0].cell.Cell_lat
                 checkpoint_long = val[0].cell.Cell_long
             val_inside.append(val)
+            print("val_inside",val_inside)
             dist_inside.append(dist)
 
             #distance_sector.append(dist)
@@ -781,6 +782,7 @@ def place_order(request):
         city = body['city']
         user_latitude = float(body['order_lat'])
         user_longitude = float(body['order_long'])
+        print(items)
 
     #    response = Delivery_Boys.objects.all()
     #    list1 = list(response)
