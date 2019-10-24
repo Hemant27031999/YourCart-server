@@ -167,7 +167,10 @@ def order_delivered(request):
 
 def reached_vendor(request):
     if request.method == 'POST':
-        data = {
+        data = {data = {
+            'order_id': request.POST['order_id'],
+            'status': 'reached customer'
+        }
             'order_id': request.POST['order_id'],
             'status': 'reached vendor'
         }

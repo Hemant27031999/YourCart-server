@@ -284,7 +284,7 @@ def get_products_cell(cell):
 
 
 def get_order_history(request):
-    objs = Orders.objects.filter(customer_phone=RegUser.objects.get(phone_no=request.POST['cust_phone']))
+    objs = Orders.objects.filter(customer_phone=RegUser.objects.get(phone_no=request.POST['cust_phone'])).filter(status='Delivired')
     cust_orders = list(objs)
     no_orders = len(cust_orders)
     obj_list = []
@@ -775,13 +775,17 @@ def place_order(request):
         #  order.quantity = request.POST['quantity']
 
         print(request.POST)
-        ar1 = request.POST.getlist('items')
-        ar2 = request.POST.getlist('quantities')
+        items = request.POST.getlist('items')
         city = request.POST['city']
         user_latitude = float(request.POST['order_lat'])
         user_longitude = float(request.POST['order_long'])
 
+        ar1 =[]
+        ar2=[]
         print(request.POST.getlist('items'))
+        for item in items:
+            ar1.append(item['productid'])
+            ar2.append(item['itemcount'])
         # i = 0
         # for a, b in zip(ar1, ar2):
         #     if i == 0:
@@ -947,7 +951,7 @@ def place_order(request):
                         prev_orders.objects.create(order_id = order_id, vendor_phone = ven.phone_no ,product_id = obj[0], status = "R")
 
             response = {
-                'success': 'true',
+         #       'success': 'true',
                 'primaryBoy_name':primaryBoy.name,
                 'primaryBoy_phone':primaryBoy.phone_no
             }
