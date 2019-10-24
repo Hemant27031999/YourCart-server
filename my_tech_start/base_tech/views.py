@@ -780,7 +780,7 @@ def place_order(request):
         response = {
             'success': 'true',
             'primaryBoy_name':'Kunal',
-            'primaryBoy_phone':'9810445129'
+            'primaryBoy_phone':'6265096224'
         }
         return JsonResponse(response)
 
