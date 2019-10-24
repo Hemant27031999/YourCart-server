@@ -3,6 +3,7 @@ from .models import *
 from base_tech.models import *
 from django.http import JsonResponse
 from pusher import Pusher
+from vendor_side.models import *
 
 pusher = Pusher(app_id=u'884349', key=u'7c495f369f4053064877', secret=u'1f0f6089002fcb5d3ce1', cluster=u'ap2', ssl=True)
 
@@ -92,11 +93,20 @@ def vendor_details(request):
             ven_order = myorder.filter(vendor_phone = vendor_phone)
             print("ven_order",ven_order)
             products = []
+            products_name = []
             for product in ven_order:
-                products.append(product.product_name)
+                products.append(product.product_id.product_id)
+                obj = CategorizedProducts.objects.filter(product_id = product.product_id.product_id)
+                products_name.append(obj[0].product_name)
+            ven_obj = Vendors.objects.filter(phone_no = vendor_phone)
             print("products",products)
+            d["vendor_name"] = ven_obj[0].name
+            d["vendor_address"] = ven_obj[0].address
+            d["vendor_lat"] = ven_obj[0].vendor_lat
+            d["vendor_long"] = ven_obj[0].vendor_long
             d["vendor_phone"] = vendor_phone
-            d["products"] = products
+            d["products_id"] = products
+            d["products_name"] = products_name
             print("d",d)
             details.append(d)
         dict= {"details":details}
@@ -185,6 +195,10 @@ def order_pickedup(request):
             'order_id': request.POST['order_id'],
             'status': 'pickedup'
         }
+        order_id = request.POST['order_id']
+        prev_orders.objects.filter(order_id = order_id).update(order_status = "D")
+        # for product in products:
+        #     product.order_status
         pusher.trigger('my-channel', 'my-event', data)
         response = {'success': 'true'}
         return JsonResponse(response)
@@ -203,3 +217,8 @@ def reached_customer(request):
         return JsonResponse(response)
     response = {'success': 'true'}
     return JsonResponse(response)
+
+# def order_picked(request):
+#     if request.method == 'POST':
+#         order_id = request.POST['order_id']
+#         products

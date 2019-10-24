@@ -333,7 +333,7 @@ def is_Sublist(l, s):
 	return sub_set
 
 
-def vendor_assignment(vendors,ar1,ar2,vendor_assigned_list,accepted_orders_list,rejected_orders_list):
+def vendor_assignment(vendors,ar1,ar2,vendor_assigned_list,accepted_orders_list,rejected_orders_list,order_id):
     print("a",vendors)
     if (len(vendors) == 0):
         print("len_vendors")
@@ -421,13 +421,13 @@ def vendor_assignment(vendors,ar1,ar2,vendor_assigned_list,accepted_orders_list,
 
     print("end of v_assign",ar1)
     print(ar2)
-    new1,new2,new_v_a_l,new_a_o_l,new_r_o_l=vendor_assignment(vendors, ar1, ar2,vendor_assigned_list, accepted_orders_list, rejected_orders_list)
+    new1,new2,new_v_a_l,new_a_o_l,new_r_o_l=vendor_assignment(vendors, ar1, ar2,vendor_assigned_list, accepted_orders_list, rejected_orders_list,order_id)
     return new1,new2,new_v_a_l,new_a_o_l,new_r_o_l
 
 
 
 
-def cell_sort(cells,product_count,ar1,ar2, user_latitude,user_longitude,city,vendor_assigned_list,accepted_orders_list,rejected_orders_list,cell_distance_all,cell_distance):
+def cell_sort(cells,product_count,ar1,ar2, user_latitude,user_longitude,city,vendor_assigned_list,accepted_orders_list,rejected_orders_list,cell_distance_all,cell_distance,order_id):
     print("cell_sort_top",cells)
     if len(cells) == 0:
         print("len_cells=0")
@@ -470,7 +470,7 @@ def cell_sort(cells,product_count,ar1,ar2, user_latitude,user_longitude,city,ven
     valist=[]
     alist = []
     ralist = []
-    new_ar1,new_ar2,valist,alist,ralist= vendor_assignment(vendors,ar1,ar2,valist,alist,ralist)
+    new_ar1,new_ar2,valist,alist,ralist= vendor_assignment(vendors,ar1,ar2,valist,alist,ralist,order_id)
     vendor_assigned_list.append(valist)
     accepted_orders_list.append(alist)
     rejected_orders_list.append(ralist)
@@ -503,7 +503,7 @@ def cell_sort(cells,product_count,ar1,ar2, user_latitude,user_longitude,city,ven
     #[cells.index(closest_cell)]
     cell_distance_all.remove(cell_distance_all[cells.index(closest_cell)])
     cells.remove(closest_cell)
-    new1,new2,new_valist,new_alist,new_ralist,cell_distance=cell_sort(cells, product_count , new_ar1,new_ar2, user_latitude,user_longitude,city,vendor_assigned_list,accepted_orders_list,rejected_orders_list,cell_distance_all,cell_distance)
+    new1,new2,new_valist,new_alist,new_ralist,cell_distance=cell_sort(cells, product_count , new_ar1,new_ar2, user_latitude,user_longitude,city,vendor_assigned_list,accepted_orders_list,rejected_orders_list,cell_distance_all,cell_distance,order_id)
     return new1,new2,new_valist,new_alist,new_ralist,cell_distance
 
 def get_bearing(lat1, lat2, long1, long2):
@@ -520,7 +520,7 @@ def sector_check(lat1,long1,lat2,long2,lat3,long3):
         return angle,1
 
 
-def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,user_longitude,city,phone_no):
+def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,user_longitude,city,phone_no,order_id):
     val_inside = []
     dist_inside = []
     min_u2d = 1000
@@ -773,7 +773,8 @@ def place_order(request):
         #  order = Orders()
         #  order.item = request.POST['item']
         #  order.quantity = request.POST['quantity']
-
+        order_id = uuid.uuid4()
+        print("order_id",order_id)
         print(request.POST)
         ar1 = request.POST.getlist('items')
         ar2 = request.POST.getlist('quantities')
@@ -835,13 +836,13 @@ def place_order(request):
         vendor_assigned_list=[]
         accepted_orders_list=[]
         rejected_orders_list=[]
-        ar1_rem,ar2_rem,vendor_assigned_list,accepted_orders_list,rejected_orders_list,cell_distance = cell_sort(cells,product_count,ar1,ar2, user_latitude,user_longitude,city,vendor_assigned_list,accepted_orders_list,rejected_orders_list,cell_distance_all,cell_distance)
+        ar1_rem,ar2_rem,vendor_assigned_list,accepted_orders_list,rejected_orders_list,cell_distance = cell_sort(cells,product_count,ar1,ar2, user_latitude,user_longitude,city,vendor_assigned_list,accepted_orders_list,rejected_orders_list,cell_distance_all,cell_distance,order_id)
         print(vendor_assigned_list)
         print(accepted_orders_list)
         print(rejected_orders_list)
         print(cell_distance)
 
-        final_vendor_cell,final_deliverBoy,primaryBoy=delivery_boy_assignment(deepcopy(vendor_assigned_list),deepcopy(cell_distance),user_latitude,user_longitude,city,request.POST['phone_no'])
+        final_vendor_cell,final_deliverBoy,primaryBoy=delivery_boy_assignment(deepcopy(vendor_assigned_list),deepcopy(cell_distance),user_latitude,user_longitude,city,request.POST['phone_no'],order_id)
 
             # products = get_products_cell(cell.Cell_id)
             # if is_Sublist(products,ar1):
@@ -918,7 +919,7 @@ def place_order(request):
           #      obj.product_id = a
           #      obj.quantity = b
           #      obj.save()
-            order_id = uuid.uuid4()
+
             print(order_id)
             for cell,cell_accepted_order,cell_rejected_order in zip(vendor_assigned_list,accepted_orders_list,rejected_orders_list):
                 for ven,ven_accepted_order,ven_rejected_order in zip(cell,cell_accepted_order,cell_rejected_order):
@@ -1102,6 +1103,9 @@ def unique(list1):
 
 
 def get_products(request):
+    # body=request.body.decode('utf-8')
+    # print(json.loads(body)['city'])
+
     if request.method == "POST":
         mlong = float(request.POST['longitude'])
         mlat = float(request.POST['latitude'])
