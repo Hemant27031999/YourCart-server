@@ -88,7 +88,6 @@ def vendor_details(request):
         details = []
         for vendor_phone in vendor_phones:
             d={}
-
             ven_order = myorder.filter(vendor_phone = vendor_phone)
             print("ven_order",ven_order)
             products = []
