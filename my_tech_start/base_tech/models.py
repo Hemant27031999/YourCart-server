@@ -73,7 +73,7 @@ class Vendors(models.Model):
     vendor_lat = models.FloatField()
     vendor_long = models.FloatField()
     city = models.CharField(unique=False, max_length=255)
-    cell = models.ForeignKey(Cells, on_delete =models.CASCADE)
+    cell = models.ForeignKey(Cells, on_delete =models.CASCADE, null=True, blank=True)
     STATUS = [
         ('A', 'Active'),
         ('I', 'Inactive'),
