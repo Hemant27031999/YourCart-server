@@ -780,6 +780,16 @@ def place_order(request):
         user_latitude = float(request.POST['order_lat'])
         user_longitude = float(request.POST['order_long'])
 
+        response = Delivery_Boys.objects.all()
+        list1 = list(response)
+        abc = list1[0]['phone_no']
+        response = {
+         #       'success': 'true',
+                'primaryBoy_name':list1[0]['name'],
+                'primaryBoy_phone':list1[0]['phone_no']
+            }
+        return JsonResponse(response)
+
         ar1 =[]
         ar2=[]
         print(request.POST.getlist('items'))
