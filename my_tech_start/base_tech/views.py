@@ -439,7 +439,10 @@ def cell_sort(cells,product_count,ar1,ar2, user_latitude,user_longitude,city,ven
 
     for cell in cells:
         products = get_products_cell(cell)
+        print("products",products)
         m = len([value for value in ar1 if value in products])
+        print("ar1",ar1)
+        print("m",m)
         #m = number of required products cell has
         product_count.append(m)
     # zipped_pairs = zip(product_count,cells)
@@ -863,7 +866,7 @@ def place_order(request):
         vendor_assigned_list=[]
         accepted_orders_list=[]
         rejected_orders_list=[]
-        ar1_rem,ar2_rem,vendor_assigned_list,accepted_orders_list,rejected_orders_list,cell_distance = cell_sort(cells,product_count,ar1,ar2, user_latitude,user_longitude,city,vendor_assigned_list,accepted_orders_list,rejected_orders_list,cell_distance_all,cell_distance,order_id)
+        ar1_rem,ar2_rem,vendor_assigned_list,accepted_orders_list,rejected_orders_list,cell_distance = cell_sort(cells,product_count,deepcopy(ar1),deepcopy(ar2), user_latitude,user_longitude,city,vendor_assigned_list,accepted_orders_list,rejected_orders_list,cell_distance_all,cell_distance,order_id)
         print(vendor_assigned_list)
         print(accepted_orders_list)
         print(rejected_orders_list)
