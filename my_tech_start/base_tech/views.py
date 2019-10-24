@@ -859,7 +859,7 @@ def place_order(request):
         print(rejected_orders_list)
         print(cell_distance)
 
-        final_vendor_cell,final_deliverBoy,primaryBoy=delivery_boy_assignment(deepcopy(vendor_assigned_list),deepcopy(cell_distance),user_latitude,user_longitude,city,request.POST['phone_no'])
+        final_vendor_cell,final_deliverBoy,primaryBoy=delivery_boy_assignment(deepcopy(vendor_assigned_list),deepcopy(cell_distance),user_latitude,user_longitude,city,body['phone_no'])
 
             # products = get_products_cell(cell.Cell_id)
             # if is_Sublist(products,ar1):
@@ -883,8 +883,8 @@ def place_order(request):
         #         if is_Sublist(products,ar1):
         #             closest_vendor = vendor
         #             break
-        ar1 = request.POST.getlist('items')
-        ar2 = request.POST.getlist('quantities')
+        #ar1 = request.POST.getlist('items')
+        #ar2 = request.POST.getlist('quantities')
         print(ar1)
         i=0
         if ar1_rem==[]:
@@ -948,8 +948,8 @@ def place_order(request):
                             value = "S"
                         obj = CategorizedProducts.objects.filter(product_id = ven_order)
                         Orders.objects.create(
-                            customer_phone=RegUser.objects.get(phone_no=request.POST['phone_no']),
-                            address=request.POST['address'],
+                            customer_phone=RegUser.objects.get(phone_no=body['phone_no']),
+                            address=body['address'],
                             product_id=obj[0],
                             quantity=ar2[ar1.index(ven_order)],
                             order_id=order_id,
