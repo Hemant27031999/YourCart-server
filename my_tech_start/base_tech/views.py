@@ -284,7 +284,7 @@ def get_products_cell(cell):
 
 
 def get_order_history(request):
-    objs = Orders.objects.filter(customer_phone=RegUser.objects.get(phone_no=request.POST['cust_phone']))
+    objs = Orders.objects.filter(customer_phone=RegUser.objects.get(phone_no=request.POST['cust_phone'])).filter(status='Delivired')
     cust_orders = list(objs)
     no_orders = len(cust_orders)
     obj_list = []
@@ -543,6 +543,7 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,use
                 checkpoint_lat = val[0].cell.Cell_lat
                 checkpoint_long = val[0].cell.Cell_long
             val_inside.append(val)
+            print("val_inside",val_inside)
             dist_inside.append(dist)
 
             #distance_sector.append(dist)
@@ -770,19 +771,45 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,use
 
 def place_order(request):
     if request.method == 'POST':
+        order_id = uuid.uuid4
         #  order = Orders()
         #  order.item = request.POST['item']
         #  order.quantity = request.POST['quantity']
-        order_id = uuid.uuid4()
-        print("order_id",order_id)
-        print(request.POST)
-        ar1 = request.POST.getlist('items')
-        ar2 = request.POST.getlist('quantities')
-        city = request.POST['city']
-        user_latitude = float(request.POST['order_lat'])
-        user_longitude = float(request.POST['order_long'])
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
 
-        print(request.POST.getlist('items'))
+        # response = {
+        #     'success': 'true',
+        #     'primaryBoy_name':'Kunal',
+        #     'primaryBoy_phone':'6265096224'
+        # }
+        # return JsonResponse(response)
+
+        print(request.POST)
+        items = body['items']
+        city = body['city']
+        user_latitude = float(body['order_lat'])
+        user_longitude = float(body['order_long'])
+        print(items)
+
+    #    response = Delivery_Boys.objects.all()
+    #    list1 = list(response)
+    #    abc = list1[0]['phone_no']
+    #    response = {
+    #     #       'success': 'true',
+    #            'primaryBoy_name':list1[0]['name'],
+    #            'primaryBoy_phone':list1[0]['phone_no']
+    #        }
+    #    return JsonResponse(response)
+
+        ar1 =[]
+        ar2=[]
+      #  print(request.POST.getlist('items'))
+        for item in items:
+            ar1.append(item['productid'])
+            ar2.append(item['itemcount'])
+        print(ar1)
+        print(ar2)
         # i = 0
         # for a, b in zip(ar1, ar2):
         #     if i == 0:
@@ -842,7 +869,7 @@ def place_order(request):
         print(rejected_orders_list)
         print(cell_distance)
 
-        final_vendor_cell,final_deliverBoy,primaryBoy=delivery_boy_assignment(deepcopy(vendor_assigned_list),deepcopy(cell_distance),user_latitude,user_longitude,city,request.POST['phone_no'],order_id)
+        final_vendor_cell,final_deliverBoy,primaryBoy=delivery_boy_assignment(deepcopy(vendor_assigned_list),deepcopy(cell_distance),user_latitude,user_longitude,city,body['phone_no'],order_id)
 
             # products = get_products_cell(cell.Cell_id)
             # if is_Sublist(products,ar1):
@@ -866,8 +893,8 @@ def place_order(request):
         #         if is_Sublist(products,ar1):
         #             closest_vendor = vendor
         #             break
-        ar1 = request.POST.getlist('items')
-        ar2 = request.POST.getlist('quantities')
+        #ar1 = request.POST.getlist('items')
+        #ar2 = request.POST.getlist('quantities')
         print(ar1)
         i=0
         if ar1_rem==[]:
@@ -931,8 +958,8 @@ def place_order(request):
                             value = "S"
                         obj = CategorizedProducts.objects.filter(product_id = ven_order)
                         Orders.objects.create(
-                            customer_phone=RegUser.objects.get(phone_no=request.POST['phone_no']),
-                            address=request.POST['address'],
+                            customer_phone=RegUser.objects.get(phone_no=body['phone_no']),
+                            address=body['address'],
                             product_id=obj[0],
                             quantity=ar2[ar1.index(ven_order)],
                             order_id=order_id,
@@ -948,7 +975,7 @@ def place_order(request):
                         prev_orders.objects.create(order_id = order_id, vendor_phone = ven.phone_no ,product_id = obj[0], status = "R")
 
             response = {
-                'success': 'true',
+         #       'success': 'true',
                 'primaryBoy_name':primaryBoy.name,
                 'primaryBoy_phone':primaryBoy.phone_no
             }
@@ -1110,6 +1137,7 @@ def get_products(request):
         mlong = float(request.POST['longitude'])
         mlat = float(request.POST['latitude'])
         mcity = request.POST['city']
+        print(mcity)
 
 
         vendors = Vendors.objects.filter(city=mcity)
@@ -1121,7 +1149,7 @@ def get_products(request):
 
         for vendor in vendors:
             print(type(mlat))
-            if distance(mlat, mlong, vendor.vendor_lat, vendor.vendor_long) < 7:
+            if distance(mlat, mlong, vendor.vendor_lat, vendor.vendor_long) !=0:
                 selected_vendors.append(vendor)
 
         for vendor in selected_vendors:

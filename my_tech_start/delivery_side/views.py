@@ -89,7 +89,6 @@ def vendor_details(request):
         details = []
         for vendor_phone in vendor_phones:
             d={}
-
             ven_order = myorder.filter(vendor_phone = vendor_phone)
             print("ven_order",ven_order)
             products = []
@@ -178,6 +177,10 @@ def order_delivered(request):
 
 def reached_vendor(request):
     if request.method == 'POST':
+        data = {
+            'order_id': request.POST['order_id'],
+            'status': 'reached customer'
+        }
         data = {
             'order_id': request.POST['order_id'],
             'status': 'reached vendor'
