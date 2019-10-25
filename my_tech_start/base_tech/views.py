@@ -859,7 +859,7 @@ def place_order(request):
         cell_distance = []
         for cell in cells_all:
             d = (distance(user_latitude,user_longitude , cell.Cell_lat, cell.Cell_long))
-            if d<7:
+            if d>0:
                 cells.append(cell)
                 cell_distance_all.append(d)
         print(cells)
