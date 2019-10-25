@@ -774,7 +774,8 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,use
 
 def place_order(request):
     if request.method == 'POST':
-        order_id = uuid.uuid4
+        order_id = uuid.uuid4()
+        print(order_id)
         #  order = Orders()
         #  order.item = request.POST['item']
         #  order.quantity = request.POST['quantity']
