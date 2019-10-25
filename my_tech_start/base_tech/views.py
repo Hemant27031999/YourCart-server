@@ -872,8 +872,8 @@ def place_order(request):
         print(accepted_orders_list)
         print(rejected_orders_list)
         print(cell_distance)
-
-        final_vendor_cell,final_deliverBoy,primaryBoy=delivery_boy_assignment(deepcopy(vendor_assigned_list),deepcopy(cell_distance),user_latitude,user_longitude,city,body['phone_no'],order_id)
+        if vendor_assigned_list != []:
+            final_vendor_cell,final_deliverBoy,primaryBoy=delivery_boy_assignment(deepcopy(vendor_assigned_list),deepcopy(cell_distance),user_latitude,user_longitude,city,body['phone_no'],order_id)
 
             # products = get_products_cell(cell.Cell_id)
             # if is_Sublist(products,ar1):
