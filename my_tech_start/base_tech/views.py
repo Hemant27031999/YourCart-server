@@ -459,6 +459,11 @@ def cell_sort(cells,product_count,ar1,ar2, user_latitude,user_longitude,city,ven
              cell_max_list.append(cell)
     print("vendors_max",cell_max_list)
     print("count_max",count_max)
+
+    if count_max == 0:
+        return ar1,ar2,vendor_assigned_list,accepted_orders_list,rejected_orders_list,cell_distance
+
+
     min_distance = 1000
     for cell in cell_max_list:
         dist = distance(cell.Cell_lat,cell.Cell_long,user_latitude, user_longitude)
@@ -700,7 +705,7 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,use
 
 
 
-        vendor_cell_sector.remove(vendor_cell)
+        # vendor_cell_sector.append(vendor_cell)
 
 
 
@@ -859,6 +864,7 @@ def place_order(request):
         cell_distance = []
         for cell in cells_all:
             d = (distance(user_latitude,user_longitude , cell.Cell_lat, cell.Cell_long))
+            #distance problem
             if d>0:
                 cells.append(cell)
                 cell_distance_all.append(d)
