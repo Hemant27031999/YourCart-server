@@ -276,10 +276,11 @@ def get_products_cell(cell):
     vendor_list = Vendors.objects.filter(cell = cell)
     myProducts = set()
     for vendor in vendor_list:
-        products = Vendor_Products.objects.filter(vendor_phone = vendor)
-        for product in products:
-            myProducts.add(product.product_id)
-            #myProducts.add(list1)
+        if vendor.current_no_orders < 5:
+            products = Vendor_Products.objects.filter(vendor_phone = vendor)
+            for product in products:
+                myProducts.add(product.product_id)
+                #myProducts.add(list1)
     return list(myProducts)
 
 
@@ -377,10 +378,15 @@ def vendor_assignment(vendors,ar1,ar2,vendor_assigned_list,accepted_orders_list,
             total_orders.append(item)
             order_quantities.append(quan)
     print(total_orders)
-    send_vendor_order(vmax.phone_no, total_orders, order_quantities)
+
     #assuming for now
     accepted_orders = total_orders
-
+    curr_no_orders = vmax.current_no_orders
+    vmax.current_no_orders = curr_no_orders +1
+    total_no_orders = vmax.total_no_orders
+    vmax.total_no_orders = total_no_orders + 1
+    vmax.save()
+    send_vendor_order(vmax.phone_no, total_orders, order_quantities)
     #rejected orders
     rejected_orders = []
     for item in total_orders:
@@ -472,9 +478,12 @@ def cell_sort(cells,product_count,ar1,ar2, user_latitude,user_longitude,city,ven
             closest_cell = cell
     p1=(get_products_cell(closest_cell))
     print([value for value in ar1 if value in p1])
-    # vendors
+    vendors = []
     print("closest_cell",closest_cell)
-    vendors = list(Vendors.objects.filter(cell = closest_cell))
+    vendors_all = list(Vendors.objects.filter(cell = closest_cell))
+    for vendor in vendors_all:
+        if vendor.current_no_orders < 5:
+            vendors.append(vendor)
     valist=[]
     alist = []
     ralist = []
