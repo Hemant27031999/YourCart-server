@@ -32,6 +32,24 @@ def check_delivery_boy(request):
     return JsonResponse(response)
 
 
+def activate_delboy(request):
+    if request.method == 'POST':
+        obj = Delivery_Boys.objects.get(phone_no=request.POST['del_boy_phone'])
+        if request.POST['status'] == 'active':
+            obj.update(status='A')
+        else:
+            obj.update(status='I')
+        response = {
+            'vendor_phone': request.POST['vendor_phone'],
+            'success': 'true'
+        }
+        return JsonResponse(response)
+    response = {
+        'error' : 'Invalid'
+    }
+    return JsonResponse(response)
+
+
 def order_confirm(request):
     if request.method == 'POST':
         if request.POST['accepted'] == 'true':

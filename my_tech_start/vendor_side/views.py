@@ -37,8 +37,8 @@ def send_prev_products(request):
 		obj_list = []
 		print(all_products)
 		for i in range(no_prod):
-			print(all_products[i].product_id.product_id)
-			obj = CategorizedProducts.objects.get(product_id=all_products[i].product_id.product_id)
+			print(all_products[i].product_id)
+			obj = CategorizedProducts.objects.get(product_id=all_products[i].product_id)
 			prod = {
 				'prod_id': obj.product_id,
 				'prod_name': obj.product_name,
@@ -56,6 +56,8 @@ def send_prev_products(request):
 			'products': obj_list
 		}
 		return JsonResponse(data)
+	else:
+		return JsonResponse({"error": "invalid!"})
 
 
 def pusher_authentication(request):
@@ -224,10 +226,25 @@ def pusher_check(request):
 
 
 def send_vendor_order(vendor_phone, items, quantities):
-	data = {
+	l = len(items)
+	order_items = []
+	for i in range(l):
+		obj = CategorizedProducts.objects.get(product_id=items[i])
+		d = {
+			'under_category': obj.under_category.categoryName,
+			'product_name': obj.product_name,
+			'product_id': obj.product_id,
+			'product_price': obj.product_price,
+			'product_rating': obj.product_rating,
+			'product_descp': obj.product_descp,
+			'product_imagepath': obj.product_imagepath,
+			'quantity': quantities[i]
+		}
+		order_items.append(d)
+	data={
 		'vendor_phone': vendor_phone,
-		'items': items,
-		'quantities': quantities
+		'no_prod': l,
+		'products': order_items
 	}
 	print(data)
 	pusher.trigger('my-channel', 'my-event', data)
