@@ -267,6 +267,17 @@ def order_ongoing(request):
 		return JsonResponse(dict,safe = False)
 
 
+def delivery_details(request):
+	if request.method == 'POST':
+		details = Orders.objects.get(order_id=request.POST['order_id'], vendor_phone=request.POST['vendor_phone'])
+		data = {
+			'order_id': request.POST['order_id'],
+			'vendor_phone': request.POST['vendor_phone'],
+			'del_boy_name': details.delivery_boy_phone.name,
+			'del_boy_phone': details.delivery_boy_phone.phone_no,
+		}
+
+
 def pusher_check(request):
 	#data = {
 	#	'products': 'abcd'
