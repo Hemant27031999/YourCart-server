@@ -874,7 +874,7 @@ def place_order(request):
         for cell in cells_all:
             d = (distance(user_latitude,user_longitude , cell.Cell_lat, cell.Cell_long))
             #distance problem
-            if d>0:
+            if d<=7:
                 cells.append(cell)
                 cell_distance_all.append(d)
         print(cells)

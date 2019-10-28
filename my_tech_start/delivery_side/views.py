@@ -135,22 +135,35 @@ def del_boy_details(request):
         del_phone = request.POST['phone_no']
         order_id = request.POST['order_id']
         #filter wrt order_id
+        del_boy = Delivery_Boys.objects.get(phone_no = del_phone)
         myorder = Orders.objects.filter(order_id = order_id)
         print("myorder",myorder)
         if isprimary == "True":
             del_boy_list = []
+            del_name_list = []
             for boy in myorder:
                 del_boy_list.append(boy.delivery_boy_phone.phone_no)
-            print(del_boy_list )
+                del_name_list.append(boy.delivery_boy_phone.name)
+
+
+            print(del_boy_list)
             del_boy_list = unique(del_boy_list)
             del_boy_list.remove(del_phone)
-            dict = {"delivery_boys":del_boy_list}
+            del_name_list.remove(del_boy.name)
+
+            dict = {
+                "delivery_boy_phone":del_boy_list,
+                "delivery_boy_names":del_name_list
+            }
             return JsonResponse(dict,safe = False)
 
         else:
             primaryBoy = myorder.filter(delboy_type = "P")[0]
             print(primaryBoy)
-            dict = {"primary_boy": primaryBoy.delivery_boy_phone.phone_no}
+            dict = {
+                "primary_boy": primaryBoy.delivery_boy_phone.phone_no,
+                "primary_name": primaryBoy.delivery_boy_phone.name
+            }
             return JsonResponse(dict,safe = False)
 
 def order_delivered(request):
