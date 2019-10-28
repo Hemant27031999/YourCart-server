@@ -276,6 +276,8 @@ def delivery_details(request):
 			'del_boy_name': details.delivery_boy_phone.name,
 			'del_boy_phone': details.delivery_boy_phone.phone_no,
 		}
+		return JsonResponse(data)
+	return JsonResponse({'error': 'invalid'})
 
 
 def pusher_check(request):
