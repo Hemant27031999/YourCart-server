@@ -139,9 +139,11 @@ def activate(request):
 	if request.method == 'POST':
 		obj = Vendors.objects.get(phone_no=request.POST['vendor_phone'])
 		if request.POST['status'] == 'active':
-			obj.update(status='A')
+			obj.status='A'
+			obj.save()
 		else:
-			obj.update(status='I')
+			obj.status='I'
+			obj.save()
 		response = {
 			'vendor_phone': request.POST['vendor_phone'],
 			'success': 'true'
@@ -183,6 +185,56 @@ def order_history(request):
 			d["order_id"] = order_id
 			items = []
 			products = list(prev_orders.objects.filter(vendor_phone = request.POST['vendor_phone'],order_status = "D",order_id = order_id))
+			for product in products:
+				obj = CategorizedProducts.objects.filter(product_id=product.product_id)
+				print("obj",obj)
+				if product.status == "A":
+					check = True
+				else:
+					check = False
+				prod = {
+					'prod_id': obj[0].product_id,
+					'prod_name': obj[0].product_name,
+					'category_name': obj[0].under_category.categoryName,
+					'category_id': obj[0].under_category.categoryId,
+					'prod_price': obj[0].product_price,
+					'prod_rating': obj[0].product_rating,
+					'prod_desc': obj[0].product_descp,
+					'prod_img': obj[0].product_imagepath,
+					'check': check
+				}
+				items.append(prod)
+			d["items"] = items
+			print(myorders)
+			myorders.append(d)
+
+
+		dict = {
+			"no_order" : no_order ,
+			"orders" : myorders
+		}
+
+		return JsonResponse(dict,safe = False)
+
+
+def order_ongoing(request):
+	if request.method == 'POST':
+		details = []
+		print(request.POST.get('vendor_phone'))
+		order_details = list(prev_orders.objects.filter(vendor_phone = request.POST.get('vendor_phone'),order_status = "A"))
+		print("order_details",order_details)
+		order_ids = []
+		for order_detail in order_details:
+			order_ids.append(order_detail.order_id)
+		order_ids = unique(order_ids)
+		print("order_ids",order_ids)
+		no_order = len(order_ids)
+		myorders = []
+		for order_id in order_ids:
+			d={}
+			d["order_id"] = order_id
+			items = []
+			products = list(prev_orders.objects.filter(vendor_phone = request.POST['vendor_phone'],order_status = "A",order_id = order_id))
 			for product in products:
 				obj = CategorizedProducts.objects.filter(product_id=product.product_id)
 				print("obj",obj)
