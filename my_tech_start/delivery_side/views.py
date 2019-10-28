@@ -38,9 +38,11 @@ def activate_delboy(request):
     if request.method == 'POST':
         obj = Delivery_Boys.objects.get(phone_no=request.POST['delboy_phone'])
         if request.POST['status'] == 'active':
-            obj.update(status='A')
+            obj.status='A'
+            obj.save()
         else:
-            obj.update(status='I')
+            obj.status='I'
+            obj.save()
         response = {
             'delboy_phone': request.POST['delboy_phone'],
             'success': 'true'
