@@ -16,18 +16,41 @@ def check_delivery_boy(request):
             obj = Delivery_Boys.objects.get(del_boy_id=request.POST['del_boy_id'])
             response = {
                 'del_boy_phone': obj.phone_no,
+                'del_boy_name': obj.name,
                 'del_boy_id': request.POST['del_boy_id'],
                 'found': 'true'
             }
         except:
             response = {
                 'del_boy_phone': '',
+                'del_boy_name': '',
                 'del_boy_id': request.POST['del_boy_id'],
                 'found': 'false'
             }
         return JsonResponse(response)
     response = {
         'error': 'Invalid'
+    }
+    return JsonResponse(response)
+
+
+def activate_delboy(request):
+    if request.method == 'POST':
+        obj = Delivery_Boys.objects.get(phone_no=request.POST['delboy_phone'])
+        if request.POST['status'] == 'active':
+            obj.status='A'
+            obj.save()
+        else:
+            obj.status='I'
+            obj.save()
+        response = {
+            'delboy_phone': request.POST['delboy_phone'],
+            'success': 'true'
+        }
+        return JsonResponse(response)
+    response = {
+        'delboy_phone': request.POST['delboy_phone'],
+        'success': 'false'
     }
     return JsonResponse(response)
 

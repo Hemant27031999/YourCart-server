@@ -37,8 +37,8 @@ def send_prev_products(request):
 		obj_list = []
 		print(all_products)
 		for i in range(no_prod):
-			print(all_products[i].product_id.product_id)
-			obj = CategorizedProducts.objects.get(product_id=all_products[i].product_id.product_id)
+			print(all_products[i].product_id)
+			obj = CategorizedProducts.objects.get(product_id=all_products[i].product_id)
 			prod = {
 				'prod_id': obj.product_id,
 				'prod_name': obj.product_name,
@@ -56,6 +56,8 @@ def send_prev_products(request):
 			'products': obj_list
 		}
 		return JsonResponse(data)
+	else:
+		return JsonResponse({"error": "invalid!"})
 
 
 def pusher_authentication(request):
@@ -137,9 +139,11 @@ def activate(request):
 	if request.method == 'POST':
 		obj = Vendors.objects.get(phone_no=request.POST['vendor_phone'])
 		if request.POST['status'] == 'active':
-			obj.update(status='A')
+			obj.status='A'
+			obj.save()
 		else:
-			obj.update(status='I')
+			obj.status='I'
+			obj.save()
 		response = {
 			'vendor_phone': request.POST['vendor_phone'],
 			'success': 'true'
@@ -213,6 +217,69 @@ def order_history(request):
 		return JsonResponse(dict,safe = False)
 
 
+def order_ongoing(request):
+	if request.method == 'POST':
+		details = []
+		print(request.POST.get('vendor_phone'))
+		order_details = list(prev_orders.objects.filter(vendor_phone = request.POST.get('vendor_phone'),order_status = "A"))
+		print("order_details",order_details)
+		order_ids = []
+		for order_detail in order_details:
+			order_ids.append(order_detail.order_id)
+		order_ids = unique(order_ids)
+		print("order_ids",order_ids)
+		no_order = len(order_ids)
+		myorders = []
+		for order_id in order_ids:
+			d={}
+			d["order_id"] = order_id
+			items = []
+			products = list(prev_orders.objects.filter(vendor_phone = request.POST['vendor_phone'],order_status = "A",order_id = order_id))
+			for product in products:
+				obj = CategorizedProducts.objects.filter(product_id=product.product_id)
+				print("obj",obj)
+				if product.status == "A":
+					check = True
+				else:
+					check = False
+				prod = {
+					'prod_id': obj[0].product_id,
+					'prod_name': obj[0].product_name,
+					'category_name': obj[0].under_category.categoryName,
+					'category_id': obj[0].under_category.categoryId,
+					'prod_price': obj[0].product_price,
+					'prod_rating': obj[0].product_rating,
+					'prod_desc': obj[0].product_descp,
+					'prod_img': obj[0].product_imagepath,
+					'check': check
+				}
+				items.append(prod)
+			d["items"] = items
+			print(myorders)
+			myorders.append(d)
+
+
+		dict = {
+			"no_order" : no_order ,
+			"orders" : myorders
+		}
+
+		return JsonResponse(dict,safe = False)
+
+
+def delivery_details(request):
+	if request.method == 'POST':
+		details = Orders.objects.get(order_id=request.POST['order_id'], vendor_phone=request.POST['vendor_phone'])
+		data = {
+			'order_id': request.POST['order_id'],
+			'vendor_phone': request.POST['vendor_phone'],
+			'del_boy_name': details.delivery_boy_phone.name,
+			'del_boy_phone': details.delivery_boy_phone.phone_no,
+		}
+		return JsonResponse(data)
+	return JsonResponse({'error': 'invalid'})
+
+
 def pusher_check(request):
 	#data = {
 	#	'products': 'abcd'
@@ -224,10 +291,25 @@ def pusher_check(request):
 
 
 def send_vendor_order(vendor_phone, items, quantities):
-	data = {
+	l = len(items)
+	order_items = []
+	for i in range(l):
+		obj = CategorizedProducts.objects.get(product_id=items[i])
+		d = {
+			'under_category': obj.under_category.categoryName,
+			'product_name': obj.product_name,
+			'product_id': obj.product_id,
+			'product_price': obj.product_price,
+			'product_rating': obj.product_rating,
+			'product_descp': obj.product_descp,
+			'product_imagepath': obj.product_imagepath,
+			'quantity': quantities[i]
+		}
+		order_items.append(d)
+	data={
 		'vendor_phone': vendor_phone,
-		'items': items,
-		'quantities': quantities
+		'no_prod': l,
+		'products': order_items
 	}
 	print(data)
 	pusher.trigger('my-channel', 'my-event', data)
