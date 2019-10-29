@@ -787,7 +787,7 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,use
             "isprimary":isprimary
         }
         print("boy",boy)
-        send_delivery_order(vendor_list, boy.phone_no, isprimary)
+        send_delivery_order(data)
         print("data",data)
 
 
