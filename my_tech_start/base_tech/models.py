@@ -118,7 +118,6 @@ class Delivery_Boys(models.Model):
     current_no_orders = models.IntegerField()
     busy = models.BooleanField(default=False)
     city = models.CharField(unique=False, max_length=255)
-    #delete later
     lat = models.FloatField(default=28.33)
     long = models.FloatField(default=77.88)
 

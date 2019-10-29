@@ -26,6 +26,9 @@ import requests
 from geographiclib.geodesic import Geodesic
 from copy import deepcopy
 import uuid
+import firebase_admin
+import google
+from firebase_admin import credentials,firestore
 
 class Object:
     def toJSON(self):
@@ -545,7 +548,21 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,use
     final_vendor_cell = []
     # final_aol = []
     final_deliverBoy = []
+    if (not len(firebase_admin._apps)):
+        cred = credentials.Certificate("../serviceAccountKey.json")
+        firebase_admin.initialize_app(cred)
+    db =firestore.client()
     deliveryBoy_list = list(Delivery_Boys.objects.filter(city = city,status="A",busy="False"))
+
+    for boy in deliveryBoy_list:
+        doc_rf=db.collection(u'DeliveryBoyLocation').document(u'{}'.format(boy.phone_no))
+        doc=doc_rf.get()
+        boy.lat = doc.to_dict()['geo_point'].latitude
+        boy.long = doc.to_dict()['geo_point'].longitude
+        boy.save()
+
+
+
     # city = city, ))
     checkpoint_lat = user_latitude
     checkpoint_long = user_longitude
@@ -579,20 +596,20 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,use
                 max_distance = d1
 
 
-        firstmin = 1000
-        secmin = 1000
-        thirdmin = 1000
+        firstmin = deliveryBoy_list[0]
+        secmin = deliveryBoy_list[0]
+        thirdmin = deliveryBoy_list[0]
         for i in range(0, len(deliveryBoy_list)):
 
-            if distance(deliveryBoy_list[i].lat,deliveryBoy_list[i].long,farthest_cell[0].cell.Cell_lat,farthest_cell[0].cell.Cell_long) < firstmin:
+            if distance(deliveryBoy_list[i].lat,deliveryBoy_list[i].long,farthest_cell[0].cell.Cell_lat,farthest_cell[0].cell.Cell_long) < distance(firstmin.lat,firstmin.long,farthest_cell[0].cell.Cell_lat,farthest_cell[0].cell.Cell_long):
                 thirdmin = secmin
                 secmin = firstmin
                 firstmin = deliveryBoy_list[i]
 
-            elif distance(deliveryBoy_list[i].lat,deliveryBoy_list[i].long,farthest_cell[0].cell.Cell_lat,farthest_cell[0].cell.Cell_long) < secmin:
+            if distance(deliveryBoy_list[i].lat,deliveryBoy_list[i].long,farthest_cell[0].cell.Cell_lat,farthest_cell[0].cell.Cell_long) < distance(firstmin.lat,firstmin.long,farthest_cell[0].cell.Cell_lat,farthest_cell[0].cell.Cell_long):
                 thirdmin = secmin
                 secmin = deliveryBoy_list[i]
-            elif distance(deliveryBoy_list[i].lat,deliveryBoy_list[i].long,farthest_cell[0].cell.Cell_lat,farthest_cell[0].cell.Cell_long) < thirdmin:
+            if distance(deliveryBoy_list[i].lat,deliveryBoy_list[i].long,farthest_cell[0].cell.Cell_lat,farthest_cell[0].cell.Cell_long) < distance(firstmin.lat,firstmin.long,farthest_cell[0].cell.Cell_lat,farthest_cell[0].cell.Cell_long):
                 thirdmin = deliveryBoy_list[i]
 
         # min =1000
@@ -608,6 +625,7 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,use
                 val_name.append(ven.name)
                 val_address.append(ven.address)
         primaryBoy = firstmin
+        print("firstmin",primaryBoy)
         data = {
             "vendor_name":val_name,
             "vendor_address":val_address,
@@ -768,6 +786,7 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,use
             "split":count_sector>1,
             "isprimary":isprimary
         }
+        print("boy",boy)
         send_delivery_order(vendor_list, boy.phone_no, isprimary)
         print("data",data)
 
