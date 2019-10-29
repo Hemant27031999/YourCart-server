@@ -14,12 +14,14 @@ def check_vendor(request):
 			obj = Vendors.objects.get(vendor_id=request.POST['vendor_id'])
 			response = {
 				'vendor_phone': obj.phone_no,
+				'vendor_name': obj.name,
 				'vendor_id': request.POST['vendor_id'],
 				'found': 'true'
 			}
 		except:
 			response = {
 				'vendor_phone': '',
+				'vendor_name': '',
 				'vendor_id': request.POST['vendor_id'],
 				'found': 'false'
 			}
