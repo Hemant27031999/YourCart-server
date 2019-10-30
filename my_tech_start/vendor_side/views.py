@@ -330,3 +330,24 @@ def order_prepared(request):
 		return JsonResponse(response)
 	response = {'success': 'true'}
 	return JsonResponse(response)
+
+def order_dispatched(request):
+	if request.method == 'POST':
+		order_id = request.POST['order_id']
+		vendor_phone = request.POST['vendor_phone']
+		obj = prev_orders.objects.filter(order_id = order_id,vendor_phone = vendor_phone)
+        # if obj[0].order_status == "A":
+
+		if obj[0].order_status == "A":
+			vendor = Vendors.objects.get(phone_no = vendor_phone)
+			print(vendor)
+			vendor.current_no_orders = vendor.current_no_orders - 1
+			print(vendor.current_no_orders)
+			vendor.save()
+			prev_orders.objects.filter(order_id = order_id,vendor_phone = vendor_phone).update(order_status = "D")
+
+		response = {'success': 'true'}
+		return JsonResponse(response)
+
+		# response = {'success': 'true'}
+        # return JsonResponse(response)

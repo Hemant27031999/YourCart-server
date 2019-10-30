@@ -238,19 +238,19 @@ def order_pickedup(request):
             'order_id': request.POST['order_id'],
             'status': 'pickedup'
         }
-        order_id = request.POST['order_id']
-        obj = prev_orders.objects.filter(order_id = order_id)
-        if obj[0].order_status == "A":
-            vendor_list = Orders.objects.filter(order_id =order_id).values('vendor_phone')
-            print(vendor_list)
-            vendor_list = unique(vendor_list)
-            for vendor in vendor_list:
-                ven  = Vendors.objects.get(phone_no = vendor['vendor_phone'])
-                print(ven)
-                ven.current_no_orders = ven.current_no_orders - 1
-                print(ven.current_no_orders)
-                ven.save()
-            prev_orders.objects.filter(order_id = order_id).update(order_status = "D")
+        # order_id = request.POST['order_id']
+        # obj = prev_orders.objects.filter(order_id = order_id)
+        # if obj[0].order_status == "A":
+        #     vendor_list = Orders.objects.filter(order_id =order_id).values('vendor_phone')
+        #     print(vendor_list)
+        #     vendor_list = unique(vendor_list)
+        #     for vendor in vendor_list:
+        #         ven  = Vendors.objects.get(phone_no = vendor['vendor_phone'])
+        #         print(ven)
+        #         ven.current_no_orders = ven.current_no_orders - 1
+        #         print(ven.current_no_orders)
+        #         ven.save()
+        #     prev_orders.objects.filter(order_id = order_id).update(order_status = "D")
 
         # for product in products:
         #     product.order_status

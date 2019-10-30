@@ -14,5 +14,6 @@ urlpatterns = [
     path('get_prev_products/', views.send_prev_products, name='prevproducts'),
     path('pusher_auth/', views.pusher_authentication, name='pusherauth'),
     path('delivery_details/', views.delivery_details, name='deliverydetails'),
+    path('dispatch/', views.order_dispatched, name='order_dispatched'),
 
 ]
