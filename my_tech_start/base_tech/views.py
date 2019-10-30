@@ -543,7 +543,7 @@ def sector_check(lat1,long1,lat2,long2,lat3,long3):
 def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,user_longitude,city,phone_no,order_id):
     val_inside = []
     dist_inside = []
-    min_u2d = 1000
+    min_u2d = 10000
     #distance_sector = []
     final_vendor_cell = []
     # final_aol = []
@@ -728,7 +728,7 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,use
         #     elif deliveryBoy_list[i] < thirdmin:
         #         thirdmin = deliveryBoy_list[i]
 
-        min = 1000
+        min = 10000
         # initialize closest Boy
         #closestBoy = deliveryBoy_list[0]
         for boy in deliveryBoy_list:
