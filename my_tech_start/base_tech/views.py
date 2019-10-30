@@ -620,16 +620,22 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,use
         #         primaryBoy = boy
         val_name=[]
         val_address= []
+        val_lat = []
+        val_long = []
         for ven_l in val_inside:
             for ven in ven_l:
                 val_name.append(ven.name)
                 val_address.append(ven.address)
+                val_lat.append(ven.vendor_lat)
+                val_long.append(ven.vendor_long)
         primaryBoy = firstmin
         print("firstmin",primaryBoy)
         data = {
             "order_id":str(order_id),
             "vendor_name":val_name,
             "vendor_address":val_address,
+            "vendor_lat":val_lat,
+            "vendor_long":val_long,
             "checkpoint_lat": checkpoint_lat,
             "checkpoint_long":checkpoint_long,
             "user_latitude":user_latitude,
@@ -638,7 +644,7 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,use
             "split":False,
             "isprimary":True
         }
-        send_delivery_order(data)
+        send_delivery_order(data,primaryBoy.phone_no)
         #data sent
         #data received
         #if confirmed:
@@ -769,10 +775,14 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,use
         indices = [i for i, x in enumerate(final_deliverBoy) if x == boy]
         vendor_list = []
         vendor_address = []
+        vendor_lat = []
+        vendor_long = []
         for index in indices:
             for ven in final_vendor_cell[index]:
                 vendor_list.append(ven.name)
                 vendor_address.append(ven.address)
+                vendor_lat.append(ven.vendor_lat)
+                vendor_long.append(ven.vendor_long)
         if boy==primaryBoy:
             isprimary = True
         else:
@@ -781,6 +791,8 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,use
             "order_id": str(order_id),
             "vendor_name":vendor_list,
             "vendor_address":vendor_address,
+            "vendor_lat":vendor_lat,
+            "vendor_long":vendor_long,
             "checkpoint_lat": checkpoint_lat,
             "checkpoint_long":checkpoint_long,
             "user_latitude":user_latitude,
@@ -790,7 +802,7 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,use
             "isprimary":isprimary
         }
         print("boy",boy)
-        send_delivery_order(data)
+        send_delivery_order(data,boy.phone_no)
         print("data",data)
 
 

@@ -87,7 +87,7 @@ def unique(list1):
     # print list
     return unique_list
 
-def send_delivery_order(data):
+def send_delivery_order(data,phone_no):
     print(data)
     pusher.trigger('my-channel' , 'my-event', data)
 
