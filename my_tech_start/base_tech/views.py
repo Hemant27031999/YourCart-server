@@ -638,7 +638,7 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,use
             "split":False,
             "isprimary":True
         }
-        pusher.trigger('my-channel' , 'my-event', data)
+        send_delivery_order(data)
         #data sent
         #data received
         #if confirmed:
@@ -790,8 +790,7 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,use
             "isprimary":isprimary
         }
         print("boy",boy)
-        pusher.trigger('my-channel' , 'my-event', data)
-        # send_delivery_order(vendor_list, boy.phone_no, isprimary)
+        send_delivery_order(data)
         print("data",data)
 
 

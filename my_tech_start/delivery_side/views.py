@@ -87,12 +87,7 @@ def unique(list1):
     # print list
     return unique_list
 
-def send_delivery_order(vendor_phone, del_boy_phone, primary):
-    data = {
-        'vendor_phone': vendor_phone,
-        'del_boy_phone': del_boy_phone,
-        'is_primary': primary
-    }
+def send_delivery_order(data):
     print(data)
     pusher.trigger('my-channel' , 'my-event', data)
 
@@ -215,11 +210,20 @@ def reached_vendor(request):
     if request.method == 'POST':
         data = {
             'order_id': request.POST['order_id'],
-            'status': 'reached customer'
+            'status': 'reached vendor'
         }
+        pusher.trigger('my-channel', 'my-event', data)
+        response = {'success': 'true'}
+        return JsonResponse(response)
+    response = {'success': 'true'}
+    return JsonResponse(response)
+
+
+def reached_checkpoint(request):
+    if request.method == 'POST':
         data = {
             'order_id': request.POST['order_id'],
-            'status': 'reached vendor'
+            'status': 'reached checkpoint'
         }
         pusher.trigger('my-channel', 'my-event', data)
         response = {'success': 'true'}
