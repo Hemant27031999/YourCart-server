@@ -627,6 +627,7 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,use
         primaryBoy = firstmin
         print("firstmin",primaryBoy)
         data = {
+            "order_id":order_id,
             "vendor_name":val_name,
             "vendor_address":val_address,
             "checkpoint_lat": checkpoint_lat,
@@ -637,6 +638,7 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,use
             "split":False,
             "isprimary":True
         }
+        pusher.trigger('my-channel' , 'my-event', data)
         #data sent
         #data received
         #if confirmed:
@@ -776,6 +778,7 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,use
         else:
             isprimary = False
         data = {
+            "order_id": order_id,
             "vendor_name":vendor_list,
             "vendor_address":vendor_address,
             "checkpoint_lat": checkpoint_lat,
@@ -787,7 +790,8 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,use
             "isprimary":isprimary
         }
         print("boy",boy)
-        send_delivery_order(vendor_list, boy.phone_no, isprimary)
+        pusher.trigger('my-channel' , 'my-event', data)
+        # send_delivery_order(vendor_list, boy.phone_no, isprimary)
         print("data",data)
 
 
