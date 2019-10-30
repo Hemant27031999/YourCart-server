@@ -284,7 +284,7 @@ def delivery_details(request):
 			'order_id': request.POST['order_id'],
 			'vendor_phone': request.POST['vendor_phone'],
 			'del_boy_name': name,
-			'del_boy_phone': phone_no
+			'del_boy_phone': phone
 		}
 		return JsonResponse(data)
 	return JsonResponse({'error': 'invalid'})
