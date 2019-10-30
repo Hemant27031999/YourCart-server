@@ -147,12 +147,11 @@ def activate(request):
 			obj.status='I'
 			obj.save()
 		response = {
-			'vendor_phone': request.POST['vendor_phone'],
 			'success': 'true'
 		}
 		return JsonResponse(response)
 	response = {
-		'error' : 'Invalid'
+		'success' : 'false'
 	}
 	return JsonResponse(response)
 
@@ -272,11 +271,20 @@ def order_ongoing(request):
 def delivery_details(request):
 	if request.method == 'POST':
 		details = Orders.objects.get(order_id=request.POST['order_id'], vendor_phone=request.POST['vendor_phone'])
+		name = ''
+		phone = ''
+		if not details.delivery_boy_phone.name:
+			name = 'noName'
+			phone = 'noPhone'
+		else:
+			name = details.delivery_boy_phone.name
+			phone = details.delivery_boy_phone.phone_no
+
 		data = {
 			'order_id': request.POST['order_id'],
 			'vendor_phone': request.POST['vendor_phone'],
-			'del_boy_name': details.delivery_boy_phone.name,
-			'del_boy_phone': details.delivery_boy_phone.phone_no,
+			'del_boy_name': name,
+			'del_boy_phone': phone_no
 		}
 		return JsonResponse(data)
 	return JsonResponse({'error': 'invalid'})
