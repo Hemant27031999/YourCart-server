@@ -389,15 +389,15 @@ def vendor_assignment(vendors,ar1,ar2,vendor_assigned_list,accepted_orders_list,
     total_no_orders = vmax.total_no_orders
     vmax.total_no_orders = total_no_orders + 1
     vmax.save()
-    send_vendor_order(vmax.phone_no, total_orders, order_quantities)
+    send_vendor_order(order_id,vmax.phone_no, total_orders, order_quantities)
     #rejected orders
     rejected_orders = []
     for item in total_orders:
         if item not in accepted_orders:
             rejected_orders.append(item)
     post_data = {
-        "items" : accepted_orders,
-        "quantities" : order_quantities,
+        "total_orders" : accepted_orders,
+        "order_quantities" : order_quantities,
         "Vendor_phone" : vmax.phone_no
     }
 
@@ -627,7 +627,7 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,use
         primaryBoy = firstmin
         print("firstmin",primaryBoy)
         data = {
-            "order_id":order_id,
+            "order_id":str(order_id),
             "vendor_name":val_name,
             "vendor_address":val_address,
             "checkpoint_lat": checkpoint_lat,
@@ -778,7 +778,7 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,use
         else:
             isprimary = False
         data = {
-            "order_id": order_id,
+            "order_id": str(order_id),
             "vendor_name":vendor_list,
             "vendor_address":vendor_address,
             "checkpoint_lat": checkpoint_lat,

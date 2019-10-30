@@ -290,7 +290,7 @@ def pusher_check(request):
 	return JsonResponse({'abc':'abc'})
 
 
-def send_vendor_order(vendor_phone, items, quantities):
+def send_vendor_order(order_id,vendor_phone, items, quantities):
 	l = len(items)
 	order_items = []
 	for i in range(l):
@@ -307,6 +307,7 @@ def send_vendor_order(vendor_phone, items, quantities):
 		}
 		order_items.append(d)
 	data={
+		'order_id':str(order_id),
 		'vendor_phone': vendor_phone,
 		'no_prod': l,
 		'products': order_items
