@@ -306,21 +306,22 @@ def send_vendor_order(order_id,vendor_phone, items, quantities):
 	for i in range(l):
 		obj = CategorizedProducts.objects.get(product_id=items[i])
 		d = {
-			'under_category': obj.under_category.categoryName,
-			'product_name': obj.product_name,
-			'product_id': obj.product_id,
-			'product_price': obj.product_price,
-			'product_rating': obj.product_rating,
-			'product_descp': obj.product_descp,
-			'product_imagepath': obj.product_imagepath,
-			'quantity': quantities[i]
+			'category_name': obj.under_category.categoryName,
+			'prod_name': obj.product_name,
+			'prod_id': obj.product_id,
+			'prod_price': obj.product_price,
+			'prod_rating': obj.product_rating,
+			'prod_desc': obj.product_descp,
+			'prod_img': obj.product_imagepath,
+			'quantity': quantities[i],
+			'check': False,
 		}
 		order_items.append(d)
 	data={
 		'order_id':str(order_id),
-		'vendor_phone': vendor_phone,
-		'no_prod': l,
-		'products': order_items
+	#	'vendor_phone': vendor_phone,
+	#	'no_prod': l,
+		'items': order_items
 	}
 	#vendor = 'vendor'
 	print(type(vendor_phone))
