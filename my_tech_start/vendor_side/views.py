@@ -147,11 +147,13 @@ def activate(request):
 			obj.status='I'
 			obj.save()
 		response = {
-			'success': 'true'
+			'success': 'true',
+			'status': request.POST['status']
 		}
 		return JsonResponse(response)
 	response = {
-		'success' : 'false'
+		'success': 'false',
+		'status': ''
 	}
 	return JsonResponse(response)
 
