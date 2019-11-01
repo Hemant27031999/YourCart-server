@@ -325,6 +325,7 @@ def send_vendor_order(order_id,vendor_phone, items, quantities):
 	vendor = 'vendor'
 	channel_name = vendor.join(str(vendor_phone))
 	print(data)
+	print(channel_name)
 	pusher.trigger(channel_name, 'my-event', data)
 
 
