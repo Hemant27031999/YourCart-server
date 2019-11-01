@@ -89,9 +89,9 @@ def unique(list1):
 
 def send_delivery_order(data,phone_no):
     print(data)
-    delivery = 'delivery'
-    phone = str(phone_no)
-    channel_name = delivery.join(phone)
+   # delivery = 'delivery'
+   # phone = str(phone_no)
+    channel_name = 'delivery'+phone_no
     pusher.trigger(channel_name , 'my-event', data)
 
 def vendor_details(request):
