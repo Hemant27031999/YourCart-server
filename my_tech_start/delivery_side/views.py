@@ -93,7 +93,7 @@ def send_delivery_order(data,phone_no):
    # phone = str(phone_no)
     channel_name = 'delivery'+phone_no
     print("pusher request",channel_name)
-    #pusher.trigger(channel_name , 'my-event', data)
+    pusher.trigger(channel_name , 'my-event', data)
 
 def vendor_details(request):
     if request.method == 'POST':
