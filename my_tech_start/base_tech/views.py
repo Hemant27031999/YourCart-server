@@ -803,7 +803,7 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,use
         }
         print("boy",boy)
         send_delivery_order(data,boy.phone_no)
-        print("data",data)
+        # print("data",data)
 
 
 

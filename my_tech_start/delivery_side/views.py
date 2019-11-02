@@ -92,6 +92,7 @@ def send_delivery_order(data,phone_no):
    # delivery = 'delivery'
    # phone = str(phone_no)
     channel_name = 'delivery'+phone_no
+    print("pusher request",channel_name)
     pusher.trigger(channel_name , 'my-event', data)
 
 def vendor_details(request):
@@ -169,8 +170,10 @@ def del_boy_details(request):
 
             print(del_boy_list)
             del_boy_list = unique(del_boy_list)
+            del_name_list = unique(del_name_list)
             del_boy_list.remove(del_phone)
             del_name_list.remove(del_boy.name)
+            print(del_name_list)
 
             dict = {
                 "delivery_boy_phone":del_boy_list,
