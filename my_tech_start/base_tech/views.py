@@ -858,8 +858,10 @@ def place_order(request):
         ar2=[]
       #  print(request.POST.getlist('items'))
         for item in items:
-            ar1.append(item['productid'])
-            ar2.append(item['itemcount'])
+            prodid = int(item['productid'])
+            itemcount = int(item['itemcount'])
+            ar1.append(prodid)
+            ar2.append(itemcount)
         print(ar1)
         print(ar2)
         # i = 0
