@@ -837,7 +837,7 @@ def place_order(request):
         # }
         # return JsonResponse(response)
 
-        print(request.POST)
+        print(body)
         items = body['items']
         city = body['city']
         user_latitude = float(body['order_lat'])
