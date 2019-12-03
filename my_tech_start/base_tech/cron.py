@@ -32,14 +32,6 @@ def place_subscribed_order():
                     print(orders[i].product_id)
                     items.append(orders[i].product_id.product_id)
                     quantities.append(orders[i].quantity)
-                #    post_data.append(('items',order.product_id.product_id))
-                #    post_data.append(('quantities',order.quantity))
-                #    if line[0] in years_dict:
-                #        # append the new number to the existing array at this slot
-                #        post_data['items'].append(order.product_id.product_id)
-                #    else:
-                #        # create a new array in this slot
-                #        post_data['items'] = [order.quantity]
                 post_data = {
                     'phone_no': orders[0].customer_phone.phone_no,
                     'vendor_phone': orders[0].vendor_phone.phone_no,
@@ -51,7 +43,4 @@ def place_subscribed_order():
                 }
                 print(post_data)
                 print(orders[0].sorder_id)
-                #    result = urllib.request.urlopen('http://127.0.0.1:8000/place_order/', urllib.parse.urlencode(post_data).encode('utf-8'))
-                #    content = result.read()
-                #    print(content)
                 r = requests.post(url='http://127.0.0.1:8000/place_order/', data=post_data)

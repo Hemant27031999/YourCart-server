@@ -40,13 +40,6 @@ def clusterer():
 	
 	return labels
 	
-	#colors = pd.tools.plotting._get_standard_colors(len(labels), color_type='random')
-	
-	#plt.figure(figsize =(9, 9)) 
-	#plt.scatter(Y['Lattitude'], Y['Longitude'])
-	# Building the legend 
-	#plt.legend((r, g, b, k), ('Label 0', 'Label 1', 'Label 2', 'Label -1'))  
-	#plt.show() 
 
 def unique(list1): 
   
