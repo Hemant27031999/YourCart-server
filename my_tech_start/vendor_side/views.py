@@ -71,23 +71,6 @@ def pusher_authentication(request):
 	return JsonResponse(auth)
 
 
-#def pusher_auth(request):
-#	if not request.user.is_authenticated:
-#		return HttpResponseForbidden()
-#
-#	if not request.user.is_member_of_team('designers'):
-#		return HttpResponseForbidden()
-#
-#	pusher_client = Pusher(APP_ID, API_KEY, SECRET_KEY, CLUSTER)
-#
-#	# We must generate the token with pusher's service
-#	payload = pusher_client.authenticate(
-#		channel=request.POST['channel_name'],
-#		socket_id=request.POST['socket_id'])
-#
-#	return JsonResponse(payload)
-
-
 def send_all_products(request):
 	if request.method == 'GET':
 		objs = CategorizedProducts.objects.all()
