@@ -451,7 +451,7 @@ def delivery_boy_assignment(vendor_assigned_list,cell_distance,user_latitude,use
         cred = credentials.Certificate("../serviceAccountKey.json")
         firebase_admin.initialize_app(cred)
     db =firestore.client()
-    deliveryBoy_list = list(Delivery_Boys.objects.filter(city = city,status="A",busy="False"))
+    deliveryBoy_list = list(Delivery_Boys.objects.filter(city__iexact = city,status="A",busy="False"))
 
     for boy in deliveryBoy_list:
         doc_rf=db.collection(u'DeliveryBoyLocation').document(u'{}'.format(boy.phone_no))
@@ -698,8 +698,8 @@ def place_order(request):
         
 
         i=0
-        #cells = list(Cells.objects.filter(city = city))
-        cells_all = list((Cells.objects.filter(city = city)))
+        #cells = list(Cells.objects.filter(city__iexact = city))
+        cells_all = list((Cells.objects.filter(city__iexact = city)))
         cells = []
         cell_distance_all = []
         cell_distance = []
@@ -894,16 +894,16 @@ def get_products(request):
         print(mcity)
 
 
-        vendors = Vendors.objects.filter(city=mcity)
+        vendors = Vendors.objects.filter(city__iexact=mcity).filter(status = 'A')
         print(vendors)
-        vendors = Vendors.objects.filter(city = mcity)
+        #vendors = Vendors.objects.filter(city__iexact = mcity)
         #print(vendors)
         selected_vendors = []
         myProducts = []
 
         for vendor in vendors:
             print(type(mlat))
-            if distance(mlat, mlong, vendor.vendor_lat, vendor.vendor_long) !=0:
+            if distance(mlat, mlong, vendor.vendor_lat, vendor.vendor_long) <7:
                 selected_vendors.append(vendor)
 
         for vendor in selected_vendors:
