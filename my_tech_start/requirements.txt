@@ -89,7 +89,7 @@ sklearn==0.0
 South==1.0.2
 sqlparse==0.3.0
 tablib==0.13.0
-Twisted==19.7.0
+Twisted==22.10.0
 txaio==18.8.1
 uritemplate==3.0.0
 urllib3==1.25.6
